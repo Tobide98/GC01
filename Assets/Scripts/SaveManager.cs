@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Claw.TData;
-using Claw.Save;
-using Claw.Sample;
-using FlatBuffers;
+//using Claw.TData;
+//using Claw.Save;
+//using Claw.Sample;
+//using FlatBuffers;
 using System.Linq;
 using System.IO;
 
