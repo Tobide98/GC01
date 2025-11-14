@@ -1,0 +1,69 @@
+namespace Claw.TData;
+
+enum Currency : byte { Coins = 0, Tokens = 1 }
+enum Quality : byte { White = 0, Green = 1, Blue = 2, Purple = 3, Red = 4, Rainbow = 5 }
+
+table ItemDef {
+  id:string (key);
+  name:string;
+  quality:Quality;
+  description:string;
+  icon_path:string;
+  base_catch_probability:float;
+  refresh_weight:float = 1.0;
+  refresh_min:uint16 = 0;
+  refresh_max:uint16 = 0;
+}
+
+table ProbabilityDef {
+  difficulty_factor:float = 0.0;
+  environmental_coeff_min:float = 0.7;
+  environmental_coeff_max:float = 1.1;
+  drop_on_ascent_chance:float = 0.1;
+  slip_on_grab_chance:float = 0.05;
+}
+
+table GuaranteeBand {
+  quality:Quality;
+  fail_threshold:uint16;
+}
+
+table MachineRules {
+  cost_currency:Currency = Coins;
+  cost_per_play:uint16 = 1;
+  countdown_seconds:uint16 = 20;
+  allow_diagonals:bool = true;
+}
+
+table InventoryRule {
+  min_total:uint16 = 20;
+  max_total:uint16 = 80;
+}
+
+table MachineDef {
+  id:string (key);
+  rules:MachineRules;
+  inventory_rule:InventoryRule;
+  probability:ProbabilityDef;
+  guarantee:[GuaranteeBand];
+  items:[ItemDef];
+}
+
+table AudioVisualDef {
+  bgm_loop:string;
+  sfx_claw_move:string;
+  sfx_claw_click:string;
+  sfx_success:string;
+  sfx_collision:string;
+  congrats_popup_anim:string;
+}
+
+table GameDB {
+  version:string;
+  machines:[MachineDef];
+  av:AudioVisualDef;
+}
+
+file_identifier "CTDB";
+file_extension "bin";
+root_type GameDB;

@@ -1,0 +1,48 @@
+namespace Claw.Save;
+
+enum Quality : byte { White = 0, Green = 1, Blue = 2, Purple = 3, Red = 4, Rainbow = 5 }
+enum Currency : byte { Coins = 0, Tokens = 1 }
+
+table Wallet {
+  coins:uint32 = 0;
+  tokens:uint32 = 0;
+}
+
+table InventoryEntry {
+  item_id:string (key);
+  quantity:uint32 = 0;
+}
+
+table GrabRecord {
+  unix_ms:int64;
+  machine_id:string;
+  item_id:string;
+  quality:Quality;
+  success:bool;
+}
+
+table MachineRuntime {
+  machine_id:string (key);
+  stock:[InventoryEntry];
+  rolling_fail_count:uint16 = 0;
+}
+
+table Profile {
+  player_id:string (key);
+  created_unix_ms:int64;
+  last_save_unix_ms:int64;
+  wallet:Wallet;
+  inventory:[InventoryEntry];
+  history:[GrabRecord];
+  machines:[MachineRuntime];
+  last_used_machine_id:string;
+}
+
+table SaveRoot {
+  schema_version:string;
+  profiles:[Profile];
+}
+
+file_identifier "CSAV";
+file_extension "sav";
+root_type SaveRoot;

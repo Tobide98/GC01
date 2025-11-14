@@ -1,0 +1,15 @@
+namespace Claw.Sample;
+
+table Vec3
+{
+	x:float;
+	y:float;
+	z:float;
+}
+
+table ObjectPositions
+{
+	ObjectList:[Vec3];
+}
+
+root_type ObjectPositions;
