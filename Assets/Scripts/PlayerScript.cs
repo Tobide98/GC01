@@ -21,8 +21,8 @@ public class PlayerScript : MonoBehaviour
 
     public int GetPlayerCoin()
     {
-        return coin;
         UpdatePlayerCoin();
+        return coin;
     }
 
     public void ReducePlayerCoin(int amount)
@@ -45,6 +45,6 @@ public class PlayerScript : MonoBehaviour
 
     void UpdatePlayerCoin()
     {
-        coinText.text = coin.ToString("F0");
+        coinText.text = coin.ToString("N0");
     }
 }

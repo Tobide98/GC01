@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6566843536222192010}
   - component: {fileID: 7822126870867414575}
   - component: {fileID: 5433929108856240869}
+  - component: {fileID: 6812910892741583588}
   m_Layer: 0
   m_Name: RewardItem3
   m_TagString: Untagged
@@ -61,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a4ac773d9c9c5a84c887a894b298e3fd, type: 2}
+  - {fileID: 2100000, guid: 22b412b0364935f4783659ea85f0cd5d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,3 +84,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6812910892741583588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5794388670750939952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 407bd1da07b55494c903f3af113e694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invertX: 0
+  idleResetTime: 2
+  resetSpeed: 4

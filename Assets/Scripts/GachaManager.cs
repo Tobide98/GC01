@@ -8,7 +8,9 @@ using UnityEngine.UI;
 public class GachaManager : MonoBehaviour
 {
     [Header("UI Reference")]
+    [SerializeField] private GameObject machineStartInfo;
     [SerializeField] private Button startButton;
+    [SerializeField] private MainMenu mainMenu;
 
     [Header("Module Reference")]
     [SerializeField] private GachaMachineSelector gachaMachineSelector;
@@ -24,6 +26,7 @@ public class GachaManager : MonoBehaviour
 
     private void Start()
     {
+        mainMenu.gameObject.SetActive(true);
         startButton.onClick.AddListener(StartGacha);
         gachaRewardScript.OnRewardClosed += HandleRewardClosed;
     }
@@ -31,7 +34,7 @@ public class GachaManager : MonoBehaviour
     public void StartGacha()
     {
         ModalManager.Show("Start Gacha","Are you sure you want to pick this gacha?",
-        new[] { new ModalButton() { Text = "YES", Callback = CheckPlayerBalance }, new ModalButton() { Text = "NO" } });
+        new[] { new ModalButton() { Text = "NO"}, new ModalButton() { Text = "YES", Callback = CheckPlayerBalance} });
     }
 
     public void CheckPlayerBalance()
@@ -64,7 +67,7 @@ public class GachaManager : MonoBehaviour
     {
         StartMachineCouroutine();
         gachaMachineSelector.DisableSwipe();
-        startButton.gameObject.SetActive(false);
+        machineStartInfo.gameObject.SetActive(false);
     }
 
     public void StartMachineCouroutine()
@@ -87,7 +90,7 @@ public class GachaManager : MonoBehaviour
     public void ResetMachine()
     {
         StartFOVRoutine(focusFOV, normalFOV, duration);
-        startButton.gameObject.SetActive(true);
+        machineStartInfo.gameObject.SetActive(true);
     }
 
     // --- Camera Focus ---

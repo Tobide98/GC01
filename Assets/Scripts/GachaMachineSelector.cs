@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GachaMachineSelector : MonoBehaviour
 {
-    [Header("")]
+    [Header("UI Reference")]
     public TextMeshProUGUI priceTagText;
+    public Image bannerImage;
 
     [Header("Hierarchy")]
     public Transform machinesParent;
@@ -20,6 +22,10 @@ public class GachaMachineSelector : MonoBehaviour
     [Header("Swipe")]
     public float swipeThreshold = 50f;
     public bool swipeEnabled = true;
+
+    [Header("UI Buttons (assign these)")]
+    public Button nextButton;
+    public Button prevButton;
 
     private int currentIndex = 0;
     private Vector2 swipeStartPos;
@@ -39,8 +45,17 @@ public class GachaMachineSelector : MonoBehaviour
             return;
         }
 
+        // --- AUTO BUTTON LISTENER SETUP ---
+        if (nextButton != null)
+            nextButton.onClick.AddListener(OnNextButtonPressed);
+
+        if (prevButton != null)
+            prevButton.onClick.AddListener(OnPrevButtonPressed);
+        // ----------------------------------
+
         parentTargetPos = machinesParent.position;
         RecalculateParentTarget(true);
+        UpdateMachineInfo();
     }
 
     void Update()
@@ -78,11 +93,27 @@ public class GachaMachineSelector : MonoBehaviour
         }
     }
 
+    // -----------------------------------------------------------------
+    // BUTTON FUNCTIONS YOU CAN CALL FROM UI OR FROM SCRIPT
+    // -----------------------------------------------------------------
+
+    public void OnNextButtonPressed()
+    {
+        SelectNext();
+    }
+
+    public void OnPrevButtonPressed()
+    {
+        SelectPrevious();
+    }
+
+    // -----------------------------------------------------------------
+
     void SelectNext()
     {
         currentIndex = (currentIndex + 1) % machines.Count;
         RecalculateParentTarget(false);
-        UpdatePriceTag();
+        UpdateMachineInfo();
     }
 
     void SelectPrevious()
@@ -92,7 +123,7 @@ public class GachaMachineSelector : MonoBehaviour
             currentIndex = machines.Count - 1;
 
         RecalculateParentTarget(false);
-        UpdatePriceTag();
+        UpdateMachineInfo();
     }
 
     void RecalculateParentTarget(bool instant)
@@ -113,12 +144,19 @@ public class GachaMachineSelector : MonoBehaviour
     // ---------------------------------------------------
     // SWIPE ENABLE / DISABLE
     // ---------------------------------------------------
-    public void EnableSwipe() => swipeEnabled = true;
+    public void EnableSwipe()
+    {
+        swipeEnabled = true;
+        prevButton.gameObject.SetActive(swipeEnabled);
+        nextButton.gameObject.SetActive(swipeEnabled);
+    }
 
     public void DisableSwipe()
     {
         swipeEnabled = false;
         swiping = false;
+        prevButton.gameObject.SetActive(swipeEnabled);
+        nextButton.gameObject.SetActive(swipeEnabled);
     }
 
     // ---------------------------------------------------
@@ -134,8 +172,10 @@ public class GachaMachineSelector : MonoBehaviour
         return currentIndex;
     }
 
-    void UpdatePriceTag()
+    void UpdateMachineInfo()
     {
-        priceTagText.text = $"x{GetCurrentSelectedMachine().GetGachaPrice().ToString("F0")}";
+        var machine = GetCurrentSelectedMachine();  
+        priceTagText.text = $"x{machine.GetGachaPrice():F0}";
+        bannerImage.sprite = machine.GetMachineDatabase().bannerImage;
     }
 }

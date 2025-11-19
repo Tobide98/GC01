@@ -8,29 +8,43 @@ using UnityEngine;
     order = 0)]
 public class GachaMachineDatabase : ScriptableObject
 {
+    // ⭐ NEW RARITY ENUM
+    public enum Rarity
+    {
+        Normal,
+        Rare,
+        SuperRare,
+        UltraRare
+    }
+
     [Serializable]
     public class LootEntry
     {
         [Header("Loot config (itemId / base qty / weight)")]
         public GameObject rewardPrefab;
-        public int rewardItemId;          // from sheet, e.g. 1001
+        public int rewardItemId;
         public string rewardName;
-        [Min(1)] public int baseQuantity = 1;  // base quantity if you don't use range
-        [Min(0)] public int weight = 1;        // probability weight
+
+        [Min(1)] public int baseQuantity = 1;
+        [Min(0)] public int weight = 1;
+
+        [Header("Item Rarity")]
+        public Rarity rarity = Rarity.Normal;   // ⭐ NEW FIELD
 
         [Header("Quantity range (optional, overrides baseQuantity)")]
-        [Min(1)] public int quantityMin = 1;   // 数量下限
-        [Min(1)] public int quantityMax = 1;   // 数量上限
+        [Min(1)] public int quantityMin = 1;
+        [Min(1)] public int quantityMax = 1;
 
         [Header("Pity / guarantee (optional)")]
-        public int highestTrigger = 0;         // 最高触发
-        public int guaranteedMinimum = 0;      // 保底
+        public int highestTrigger = 0;
+        public int guaranteedMinimum = 0;
     }
 
     [Header("Machine Info")]
-    public int machineId;          // e.g. 1001, 2001 ...
-    public string displayName;     // machine name (from sheet)
+    public int machineId;
+    public string displayName;
     public int machinePrice;
+    public Sprite bannerImage;
 
     [Header("Weighted Loot Table")]
     public List<LootEntry> lootTable = new List<LootEntry>();

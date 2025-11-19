@@ -74,6 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3278883554580211484}
   - component: {fileID: 34036260}
+  - component: {fileID: 525340001265318713}
   m_Layer: 0
   m_Name: Slime_02
   m_TagString: Untagged
@@ -90,8 +91,8 @@ Transform:
   m_GameObject: {fileID: 2795397902362475942}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1301890846263404855}
@@ -105,12 +106,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2795397902362475942}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65282540027301e4b89584fda08d9302, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 50
+  Speed: 10
+--- !u!114 &525340001265318713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2795397902362475942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 407bd1da07b55494c903f3af113e694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invertX: 0
+  idleResetTime: 2
+  resetSpeed: 4
 --- !u!1 &2988591986747077261
 GameObject:
   m_ObjectHideFlags: 0

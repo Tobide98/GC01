@@ -143,7 +143,7 @@ Material:
     - _RimStepSmooth: 0.24
     - _Segmented: 1
     - _ShadowStep: 0.79
-    - _ShadowStepSmooth: 0
+    - _ShadowStepSmooth: 0.223
     - _ShnIntense: 0.237
     - _ShnOverlap: 0
     - _ShnRange: 0.038

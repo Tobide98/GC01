@@ -12,6 +12,7 @@ public class GachaController : MonoBehaviour
     public Transform knobObject;
     public Camera mainCamera;
     public ParticleSystem clickVfx;
+    public ParticleSystem shortClickVfx;
     [SerializeField] private Animator gachaAnim;
     public GameObject spinUI;
 
@@ -130,6 +131,7 @@ public class GachaController : MonoBehaviour
                     points++;
                     OnFullTurn?.Invoke();
                     gachaAnim.SetTrigger("Shake");
+                    if (shortClickVfx != null) shortClickVfx.Play();
 
                     // If we just hit the cap, stop & reset immediately
                     if (points >= maxTurns)
@@ -152,6 +154,7 @@ public class GachaController : MonoBehaviour
     {
         isAutoSpinning = true;
         isRotating = false;
+        isAvaliable = false;
         spinUI.SetActive(false);
 
         accumulatedDegreesCW = 0f;
@@ -172,11 +175,13 @@ public class GachaController : MonoBehaviour
                 yield return null;
             }
 
+            if (shortClickVfx != null) shortClickVfx.Play();
             points++;
             OnFullTurn?.Invoke();
             if (gachaAnim != null) gachaAnim.SetTrigger("Shake");
         }
 
+        if (shortClickVfx != null) shortClickVfx.Play();
         if (clickVfx != null) clickVfx.Play();
         FinishAndReset();
 

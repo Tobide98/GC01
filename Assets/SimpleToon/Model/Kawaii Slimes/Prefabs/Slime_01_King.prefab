@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8955322500898459853}
   - component: {fileID: 674952306}
+  - component: {fileID: 3626002632009994420}
   m_Layer: 0
   m_Name: Slime_01_King
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 873531700701352353}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.02, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -41,12 +42,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 873531700701352353}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65282540027301e4b89584fda08d9302, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 50
+  Speed: 10
+--- !u!114 &3626002632009994420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 873531700701352353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 407bd1da07b55494c903f3af113e694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invertX: 0
+  idleResetTime: 2
+  resetSpeed: 4
 --- !u!1 &2555473679859470979
 GameObject:
   m_ObjectHideFlags: 0
