@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Gravitons.UI.Modal;
 using System;
 using System.Collections;
@@ -11,6 +12,8 @@ public class GachaManager : MonoBehaviour
     [SerializeField] private GameObject machineStartInfo;
     [SerializeField] private Button startButton;
     [SerializeField] private MainMenu mainMenu;
+    private Tween fadeTween;
+    private Tween scaleTween;
 
     [Header("Module Reference")]
     [SerializeField] private GachaMachineSelector gachaMachineSelector;
@@ -67,7 +70,7 @@ public class GachaManager : MonoBehaviour
     {
         StartMachineCouroutine();
         gachaMachineSelector.DisableSwipe();
-        machineStartInfo.gameObject.SetActive(false);
+        ShowMachineInfo(false);
     }
 
     public void StartMachineCouroutine()
@@ -90,7 +93,7 @@ public class GachaManager : MonoBehaviour
     public void ResetMachine()
     {
         StartFOVRoutine(focusFOV, normalFOV, duration);
-        machineStartInfo.gameObject.SetActive(true);
+        ShowMachineInfo(true);
     }
 
     // --- Camera Focus ---
@@ -127,5 +130,44 @@ public class GachaManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         currGachaMachine.spinUI.SetActive(true);
         currGachaMachine.isAvaliable = true;
+    }
+
+    public void ShowMachineInfo(bool fadeIn)
+    {
+        var canvasGroup = machineStartInfo.GetComponent<CanvasGroup>();
+        fadeTween?.Kill();
+        scaleTween?.Kill();
+        if (fadeIn)
+        {
+            // Make sure the object is active
+            machineStartInfo.SetActive(true);
+
+            // Prepare for fade in
+            canvasGroup.alpha = 0f;
+            machineStartInfo.transform.localScale = Vector3.one * 0.7f;
+
+            fadeTween = canvasGroup.DOFade(1f, 0.3f);
+            scaleTween = machineStartInfo.transform
+                .DOScale(1f, 0.3f)
+                .SetEase(Ease.OutBack, 1.2f);
+        }
+        else
+        {
+            // Prepare for fade out
+            canvasGroup.alpha = 1f;
+            machineStartInfo.transform.localScale = Vector3.one * 1f;
+
+            fadeTween = canvasGroup
+                .DOFade(0f, 0.3f);
+
+            scaleTween = machineStartInfo.transform
+                .DOScale(1.2f, 0.3f)
+                .SetEase(Ease.InBack, 1.2f)
+                .OnComplete(() =>
+                {
+                    // Deactivate object only after animation is fully done
+                    machineStartInfo.SetActive(false);
+                });
+        }
     }
 }
