@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08cb2d3278d1c374687ea38cc64ebcb4, type: 3}
+  m_Name: StoreDatabase
+  m_EditorClassIdentifier: 
+  storeItems:
+  - icon: {fileID: 21300000, guid: e7d326d26cc29b946b0a2d717c4e5da4, type: 3}
+    title: Token Pile
+    description: This token pile will give you 1000 Token(s)
+    tokenValue: 1000
+    price: 200
+  - icon: {fileID: 21300000, guid: 2b2347a9440b1534d8f3cf96ea527399, type: 3}
+    title: Token Pouch
+    description: This token pile will give you 5000 Token(s)
+    tokenValue: 5000
+    price: 800
+  - icon: {fileID: 21300000, guid: f53698597cea7304d8b12d76d2bfe1ec, type: 3}
+    title: Token Chest
+    description: This token pile will give you 10.000 Token(s)
+    tokenValue: 10000
+    price: 1800

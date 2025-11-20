@@ -34,12 +34,12 @@ Material:
     m_Ints: []
     m_Floats:
     - _Emission: 0.5
-    - _OutlineWidth: 0.002
-    - _RimStep: 0.425
-    - _RimStepSmooth: 0.364
+    - _OutlineWidth: 0.001
+    - _RimStep: 0
+    - _RimStepSmooth: 0
     - _ShadowStep: 0.443
     - _ShadowStepSmooth: 0.262
-    - _SpecularStep: 0.092
+    - _SpecularStep: 0
     - _SpecularStepSmooth: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
