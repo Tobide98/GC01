@@ -9,6 +9,12 @@ public class GachaMachineSelector : MonoBehaviour
     public TextMeshProUGUI priceTagText;
     public Image bannerImage;
     public TextMeshProUGUI PityLeftText;
+    public GameObject gachaDropRateUI;
+    public GameObject gachaHistoryUI;
+
+    [Header("Modules")]
+    [SerializeField] private GachaProbabilityInfo gachaProbabilityInfo;
+    [SerializeField] private GachaHistoryInfo gachaHistoryInfo;
 
     [Header("Hierarchy")]
     public Transform machinesParent;
@@ -27,6 +33,8 @@ public class GachaMachineSelector : MonoBehaviour
     [Header("UI Buttons (assign these)")]
     public Button nextButton;
     public Button prevButton;
+    public Button dropRateInfoButton;
+    public Button historyInfoButton;
 
     private int currentIndex = 0;
     private Vector2 swipeStartPos;
@@ -52,6 +60,12 @@ public class GachaMachineSelector : MonoBehaviour
 
         if (prevButton != null)
             prevButton.onClick.AddListener(OnPrevButtonPressed);
+
+        if (dropRateInfoButton != null) 
+            dropRateInfoButton.onClick.AddListener(ShowDropRateInfo);
+
+        if (historyInfoButton != null)
+            historyInfoButton.onClick.AddListener(ShowHistoryInfo);
         // ----------------------------------
 
         parentTargetPos = machinesParent.position;
@@ -175,12 +189,24 @@ public class GachaMachineSelector : MonoBehaviour
 
     public void UpdateMachineInfo()
     {
-        var machine = GetCurrentSelectedMachine();  
+        var machine = GetCurrentSelectedMachine();
+        var database = machine.GetMachineDatabase();
         priceTagText.text = $"x{machine.GetGachaPrice():N0}";
-        bannerImage.sprite = machine.GetMachineDatabase().bannerImage;
+        bannerImage.sprite = database.bannerImage;
         int pityLeft = machine.GetURPityLeft();
         PityLeftText.text = $"<color=#FFA500>{pityLeft}</color> pulls left until";
+        gachaProbabilityInfo.SetDatabse(database);
+        gachaHistoryInfo.SetDatabse(database);
 
+    }
 
+    void ShowDropRateInfo()
+    {
+        gachaDropRateUI.SetActive(true);
+    }
+
+    void ShowHistoryInfo()
+    {
+        gachaHistoryUI.SetActive(true);
     }
 }

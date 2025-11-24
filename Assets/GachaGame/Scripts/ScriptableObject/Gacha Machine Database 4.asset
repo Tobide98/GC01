@@ -16,14 +16,15 @@ MonoBehaviour:
   displayName: GachaMachine_3001
   machinePrice: 800
   bannerImage: {fileID: 21300000, guid: 344dd8a0ca4add74eac57e54f58c83d0, type: 3}
+  historyData: {fileID: 11400000, guid: 5a8614278971bc6459be61964113e286, type: 2}
   lootTable:
-  - rewardPrefab: {fileID: 6182162820492919152, guid: 84b7c8441f160174fa5c6f94cf397f0a,
+  - rewardPrefab: {fileID: 1342889782683910774, guid: 4aa01f1d5c72d4e47a8c44e612a6b6fc,
       type: 3}
-    rewardItemId: 2001
-    rewardName: Monkey
+    rewardItemId: 2003
+    rewardName: Herring
     baseQuantity: 1
-    weight: 100
-    rarity: 2
+    weight: 150
+    rarity: 0
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
@@ -39,17 +40,6 @@ MonoBehaviour:
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
-  - rewardPrefab: {fileID: 1342889782683910774, guid: 4aa01f1d5c72d4e47a8c44e612a6b6fc,
-      type: 3}
-    rewardItemId: 2003
-    rewardName: Herring
-    baseQuantity: 1
-    weight: 100
-    rarity: 1
-    quantityMin: 1
-    quantityMax: 1
-    highestTrigger: 0
-    guaranteedMinimum: 0
   - rewardPrefab: {fileID: 4950779065795438720, guid: 8cb75dc2fdd63734988b8358f1314d25,
       type: 3}
     rewardItemId: 2004
@@ -57,6 +47,28 @@ MonoBehaviour:
     baseQuantity: 1
     weight: 100
     rarity: 1
+    quantityMin: 1
+    quantityMax: 1
+    highestTrigger: 0
+    guaranteedMinimum: 0
+  - rewardPrefab: {fileID: 4807929556901506227, guid: 5b5c678f31981e34f9122b87217da1ac,
+      type: 3}
+    rewardItemId: 2005
+    rewardName: Snake
+    baseQuantity: 1
+    weight: 50
+    rarity: 2
+    quantityMin: 1
+    quantityMax: 1
+    highestTrigger: 0
+    guaranteedMinimum: 0
+  - rewardPrefab: {fileID: 6182162820492919152, guid: 84b7c8441f160174fa5c6f94cf397f0a,
+      type: 3}
+    rewardItemId: 2001
+    rewardName: Monkey
+    baseQuantity: 1
+    weight: 50
+    rarity: 2
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
@@ -94,18 +106,7 @@ MonoBehaviour:
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
-  - rewardPrefab: {fileID: 4807929556901506227, guid: 5b5c678f31981e34f9122b87217da1ac,
-      type: 3}
-    rewardItemId: 2005
-    rewardName: Snake
-    baseQuantity: 1
-    weight: 10
-    rarity: 2
-    quantityMin: 1
-    quantityMax: 1
-    highestTrigger: 0
-    guaranteedMinimum: 0
   superRarePity: 5
   ultraRarePity: 10
-  currentSuperRareRolls: 0
-  currentUltraRareRolls: 2
+  currentSuperRareRolls: 1
+  currentUltraRareRolls: 1

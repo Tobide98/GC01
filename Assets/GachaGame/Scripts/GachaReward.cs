@@ -248,13 +248,17 @@ public class GachaReward : MonoBehaviour
         // -------------------------------------------------------------------------
         // Return result including rarity
         // -------------------------------------------------------------------------
-        return new RewardResult(
+        var result = new RewardResult(
             chosen.rewardItemId,
             chosen.rewardName,
             finalQty,
             chosen.rewardPrefab,
             chosen.rarity
-        );
+            );
+
+        database.historyData.AddPull(result.itemName, result.rarity, result.quantity);
+
+        return result;
     }
 
     [ContextMenu("Test Roll")]
@@ -441,6 +445,28 @@ public class GachaReward : MonoBehaviour
         });
 
         seq.Play();
+    }
+
+    public List<RewardResult> Roll10(GachaMachineDatabase database)
+    {
+        List<RewardResult> results = new List<RewardResult>();
+
+        if (database == null)
+        {
+            Debug.LogError("[GachaReward] Roll10 called with NULL database.");
+            return results;
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            RewardResult r = Roll(database);
+            results.Add(r);
+        }
+
+        //// Notify listeners (UI, sound, animations, save system)
+        //OnTenPullComplete?.Invoke(results);
+
+        return results;
     }
 
     void RandomizeCapsuleColors()

@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: GachaMachine_1001
   machinePrice: 500
   bannerImage: {fileID: 21300000, guid: c58d8aadb758ae1489307a2928f837df, type: 3}
+  historyData: {fileID: 11400000, guid: e6ee90c7ac55d054296a1aaa1c80751d, type: 2}
   lootTable:
   - rewardPrefab: {fileID: 2963001901671996601, guid: 1c08cb17858ea4d4c8fb6af351e79cd8,
       type: 3}
@@ -44,7 +45,7 @@ MonoBehaviour:
     rewardItemId: 1003
     rewardName: Star 3
     baseQuantity: 1
-    weight: 100
+    weight: 50
     rarity: 2
     quantityMin: 5
     quantityMax: 20
@@ -55,7 +56,7 @@ MonoBehaviour:
     rewardItemId: 1004
     rewardName: Normal Slime
     baseQuantity: 1
-    weight: 100
+    weight: 50
     rarity: 2
     quantityMin: 5
     quantityMax: 20
@@ -75,4 +76,4 @@ MonoBehaviour:
   superRarePity: 5
   ultraRarePity: 10
   currentSuperRareRolls: 0
-  currentUltraRareRolls: 2
+  currentUltraRareRolls: 0

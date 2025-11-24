@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: GachaMachine_2001
   machinePrice: 600
   bannerImage: {fileID: 21300000, guid: de9a6c815d13c70419c5e4c37825e1cc, type: 3}
+  historyData: {fileID: 11400000, guid: b9529ca95f549f2429f0108238e1be62, type: 2}
   lootTable:
   - rewardPrefab: {fileID: 3198502390492704377, guid: 0ba0f6eee23032e4e83d421e739dc905,
       type: 3}
@@ -74,3 +75,5 @@ MonoBehaviour:
     guaranteedMinimum: 0
   superRarePity: 5
   ultraRarePity: 10
+  currentSuperRareRolls: 0
+  currentUltraRareRolls: 0

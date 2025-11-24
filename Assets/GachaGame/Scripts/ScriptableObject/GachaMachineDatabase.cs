@@ -44,6 +44,7 @@ public class GachaMachineDatabase : ScriptableObject
     public string displayName;
     public int machinePrice;
     public Sprite bannerImage;
+    public GachaPullHistory historyData;
 
     [Header("Weighted Loot Table")]
     public List<LootEntry> lootTable = new List<LootEntry>();

@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Gravitons.UI.Modal;
 using System;
 using System.Collections;
@@ -31,6 +31,9 @@ public class GachaManager : MonoBehaviour
     private float duration = 0.3f;
     private Coroutine fovRoutine;
 
+    // --- Gacha mode (single vs 10-pull) ---
+    private bool isTenPull = false;
+
     private void OnEnable()
     {
         Instance = this;
@@ -45,8 +48,27 @@ public class GachaManager : MonoBehaviour
 
     public void StartGacha()
     {
-        ModalManager.Show("Start Gacha","Are you sure you want to pick this gacha?",
-        new[] { new ModalButton() { Text = "NO"}, new ModalButton() { Text = "YES", Callback = CheckTokenBalance} });
+        ModalManager.Show(
+            "Start Gacha",
+            "Are you sure you want to pick this gacha?",
+            new[]
+            {
+                new ModalButton() { Text = "NO"},
+                new ModalButton() { Text = "YES", Callback = CheckTokenBalance}
+            });
+    }
+
+    // 10-pull entry point (hook this to a 10x button)
+    public void StartGacha10()
+    {
+        ModalManager.Show(
+            "Start 10x Gacha",
+            "Are you sure you want to do 10 pulls on this gacha?",
+            new[]
+            {
+                new ModalButton() { Text = "NO"},
+                new ModalButton() { Text = "YES", Callback = CheckTokenBalance10}
+            });
     }
 
     public void CheckTokenBalance()
@@ -55,23 +77,69 @@ public class GachaManager : MonoBehaviour
         if (playerScirpt.CheckIsSufficientCoin(gachaMachine.GetGachaPrice()))
         {
             currGachaMachine = gachaMachine;
+            isTenPull = false; // single pull mode
             playerScirpt.ReducePlayerCoin(currGachaMachine.GetGachaPrice());
             SelectGacha(currGachaMachine);
             currGachaMachine.OnMaxTurnsReached.AddListener(OnMaxTurns);
         }
         else
         {
-            ModalManager.Show("Insufficient Coin", "Your coin is insufficient please recharge your coin first before selecting this gacha.",
-       new[] { new ModalButton() { Text = "OK" }});
+            ModalManager.Show(
+                "Insufficient Coin",
+                "Your coin is insufficient please recharge your coin first before selecting this gacha.",
+                new[] { new ModalButton() { Text = "OK" } });
+        }
+    }
+
+    // NEW: Balance check for 10-pull (cost = price * 10)
+    private void CheckTokenBalance10()
+    {
+        var gachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+        int totalPrice = gachaMachine.GetGachaPrice() * 10;
+
+        if (playerScirpt.CheckIsSufficientCoin(totalPrice))
+        {
+            currGachaMachine = gachaMachine;
+            isTenPull = true; // 10-pull mode
+            playerScirpt.ReducePlayerCoin(totalPrice);
+            SelectGacha(currGachaMachine);
+            currGachaMachine.OnMaxTurnsReached.AddListener(OnMaxTurns);
+        }
+        else
+        {
+            ModalManager.Show(
+                "Insufficient Coin",
+                "Your coin is insufficient for 10 pulls. Please recharge your coin first.",
+                new[] { new ModalButton() { Text = "OK" } });
         }
     }
 
     private void OnMaxTurns()
     {
-        //Roll
-        var reward = gachaRewardScript.Roll(currGachaMachine.GetMachineDatabase());
-        gachaRewardScript.SetReward(reward);
-        gachaRewardScript.ShowReward();
+        // Single pull → 1 roll
+        if (!isTenPull)
+        {
+            var reward = gachaRewardScript.Roll(currGachaMachine.GetMachineDatabase());
+            gachaRewardScript.SetReward(reward);
+            gachaRewardScript.ShowReward();
+        }
+        else
+        {
+            // 10-pull → 10 rolls; show the last one in the existing reward UI
+            GachaReward.RewardResult lastReward = default;
+
+            for (int i = 0; i < 10; i++)
+            {
+                lastReward = gachaRewardScript.Roll(currGachaMachine.GetMachineDatabase());
+            }
+
+            gachaRewardScript.SetReward(lastReward);
+            gachaRewardScript.ShowReward();
+
+            // reset mode back to single after finishing this 10-pull
+            isTenPull = false;
+        }
+
         currGachaMachine.isAvaliable = false;
     }
 
