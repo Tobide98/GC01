@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81b1f87b21c70d248b05bcef45bbc955, type: 3}
-  m_Name: Gacha Pull History 3
+  m_Script: {fileID: 11500000, guid: af2b95e6d5303e14e9c6f1d02894b3b4, type: 3}
+  m_Name: PlayerData
   m_EditorClassIdentifier: 
-  maxEntries: 100
-  pullHistory: []
+  coin: 50000
+  diamond: 900000
+  inventory: []

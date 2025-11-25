@@ -15,12 +15,13 @@ MonoBehaviour:
   machineId: 4
   displayName: GachaMachine_3001
   machinePrice: 800
+  machinePriceTen: 7800
   bannerImage: {fileID: 21300000, guid: 344dd8a0ca4add74eac57e54f58c83d0, type: 3}
   historyData: {fileID: 11400000, guid: 5a8614278971bc6459be61964113e286, type: 2}
   lootTable:
   - rewardPrefab: {fileID: 1342889782683910774, guid: 4aa01f1d5c72d4e47a8c44e612a6b6fc,
       type: 3}
-    rewardItemId: 2003
+    rewardItemId: 4001
     rewardName: Herring
     baseQuantity: 1
     weight: 150
@@ -31,7 +32,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 6842458599697738422, guid: cefda5744f2acb54d8f08973a10bee1e,
       type: 3}
-    rewardItemId: 2002
+    rewardItemId: 4002
     rewardName: Gecko
     baseQuantity: 1
     weight: 100
@@ -42,7 +43,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 4950779065795438720, guid: 8cb75dc2fdd63734988b8358f1314d25,
       type: 3}
-    rewardItemId: 2004
+    rewardItemId: 4003
     rewardName: Muskrat
     baseQuantity: 1
     weight: 100
@@ -53,7 +54,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 4807929556901506227, guid: 5b5c678f31981e34f9122b87217da1ac,
       type: 3}
-    rewardItemId: 2005
+    rewardItemId: 4004
     rewardName: Snake
     baseQuantity: 1
     weight: 50
@@ -64,7 +65,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 6182162820492919152, guid: 84b7c8441f160174fa5c6f94cf397f0a,
       type: 3}
-    rewardItemId: 2001
+    rewardItemId: 4005
     rewardName: Monkey
     baseQuantity: 1
     weight: 50
@@ -75,7 +76,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 5279811246306103102, guid: 252ba5fa5d8167e42af72cf97baa830e,
       type: 3}
-    rewardItemId: 2005
+    rewardItemId: 4006
     rewardName: Pudu
     baseQuantity: 1
     weight: 50
@@ -86,7 +87,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 6788538757290762323, guid: ad4137f595ec8e2449cacca9df7d3735,
       type: 3}
-    rewardItemId: 2005
+    rewardItemId: 4007
     rewardName: Sparrow
     baseQuantity: 1
     weight: 10
@@ -97,7 +98,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 7511180232019162148, guid: 818c5a1ba0d9810439f11299463f2294,
       type: 3}
-    rewardItemId: 2005
+    rewardItemId: 4008
     rewardName: Squid
     baseQuantity: 1
     weight: 10
@@ -106,7 +107,7 @@ MonoBehaviour:
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
-  superRarePity: 5
-  ultraRarePity: 10
-  currentSuperRareRolls: 1
-  currentUltraRareRolls: 1
+  superRarePity: 10
+  ultraRarePity: 80
+  currentSuperRareRolls: 0
+  currentUltraRareRolls: 0

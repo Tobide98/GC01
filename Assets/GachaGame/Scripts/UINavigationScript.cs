@@ -112,6 +112,15 @@ public class UINavigationScript : MonoBehaviour
         {
             currSelectedMenu = (Menu)parsed;
         }
+
+        if (currSelectedMenu.Equals(Menu.Home))
+        {
+            GachaManager.Instance.ForceEnableSwipe(true);
+        }
+        else
+        {
+            GachaManager.Instance.ForceEnableSwipe(false);
+        }
     }
 
     /// <summary>

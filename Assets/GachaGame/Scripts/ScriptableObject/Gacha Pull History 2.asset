@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81b1f87b21c70d248b05bcef45bbc955, type: 3}
   m_Name: Gacha Pull History 2
   m_EditorClassIdentifier: 
-  maxEntries: 30
+  maxEntries: 100
   pullHistory: []

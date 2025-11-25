@@ -15,6 +15,7 @@ MonoBehaviour:
   machineId: 2
   displayName: GachaMachine_2001
   machinePrice: 600
+  machinePriceTen: 5800
   bannerImage: {fileID: 21300000, guid: de9a6c815d13c70419c5e4c37825e1cc, type: 3}
   historyData: {fileID: 11400000, guid: b9529ca95f549f2429f0108238e1be62, type: 2}
   lootTable:
@@ -24,18 +25,7 @@ MonoBehaviour:
     rewardName: Metal Slime
     baseQuantity: 1
     weight: 100
-    rarity: 1
-    quantityMin: 1
-    quantityMax: 1
-    highestTrigger: 0
-    guaranteedMinimum: 0
-  - rewardPrefab: {fileID: 6688149642241925542, guid: 11eed2dfd1329ab4db9e7f27b8e628b7,
-      type: 3}
-    rewardItemId: 2002
-    rewardName: Viking Slime
-    baseQuantity: 1
-    weight: 20
-    rarity: 2
+    rarity: 0
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
@@ -45,7 +35,7 @@ MonoBehaviour:
     rewardItemId: 2003
     rewardName: Bunny Slime
     baseQuantity: 1
-    weight: 100
+    weight: 70
     rarity: 1
     quantityMin: 1
     quantityMax: 1
@@ -56,8 +46,19 @@ MonoBehaviour:
     rewardItemId: 2004
     rewardName: Cat Slime
     baseQuantity: 1
-    weight: 50
+    weight: 70
     rarity: 1
+    quantityMin: 1
+    quantityMax: 1
+    highestTrigger: 0
+    guaranteedMinimum: 0
+  - rewardPrefab: {fileID: 6688149642241925542, guid: 11eed2dfd1329ab4db9e7f27b8e628b7,
+      type: 3}
+    rewardItemId: 2002
+    rewardName: Viking Slime
+    baseQuantity: 1
+    weight: 50
+    rarity: 2
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
@@ -67,13 +68,13 @@ MonoBehaviour:
     rewardItemId: 2005
     rewardName: Cat Slime King
     baseQuantity: 1
-    weight: 10
+    weight: 5
     rarity: 3
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
-  superRarePity: 5
-  ultraRarePity: 10
+  superRarePity: 10
+  ultraRarePity: 80
   currentSuperRareRolls: 0
   currentUltraRareRolls: 0

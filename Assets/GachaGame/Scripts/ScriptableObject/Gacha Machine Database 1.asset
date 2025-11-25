@@ -15,6 +15,7 @@ MonoBehaviour:
   machineId: 1
   displayName: GachaMachine_1001
   machinePrice: 500
+  machinePriceTen: 4800
   bannerImage: {fileID: 21300000, guid: c58d8aadb758ae1489307a2928f837df, type: 3}
   historyData: {fileID: 11400000, guid: e6ee90c7ac55d054296a1aaa1c80751d, type: 2}
   lootTable:
@@ -45,8 +46,8 @@ MonoBehaviour:
     rewardItemId: 1003
     rewardName: Star 3
     baseQuantity: 1
-    weight: 50
-    rarity: 2
+    weight: 100
+    rarity: 0
     quantityMin: 5
     quantityMax: 20
     highestTrigger: 0
@@ -67,13 +68,13 @@ MonoBehaviour:
     rewardItemId: 1005
     rewardName: Slime King
     baseQuantity: 1
-    weight: 10
+    weight: 5
     rarity: 3
     quantityMin: 5
     quantityMax: 20
     highestTrigger: 50
     guaranteedMinimum: 0
-  superRarePity: 5
-  ultraRarePity: 10
+  superRarePity: 10
+  ultraRarePity: 80
   currentSuperRareRolls: 0
   currentUltraRareRolls: 0

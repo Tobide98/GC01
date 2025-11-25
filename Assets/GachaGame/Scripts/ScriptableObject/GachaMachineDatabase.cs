@@ -43,6 +43,7 @@ public class GachaMachineDatabase : ScriptableObject
     public int machineId;
     public string displayName;
     public int machinePrice;
+    public int machinePriceTen;
     public Sprite bannerImage;
     public GachaPullHistory historyData;
 

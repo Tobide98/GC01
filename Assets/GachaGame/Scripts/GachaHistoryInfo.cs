@@ -15,7 +15,7 @@ public class GachaHistoryInfo : MonoBehaviour
 
     [Header("Formatting")]
     public bool showIndexNumbers = true;
-    public int maxShownEntries = 30;
+    public int maxShownEntries = 100;
     public int fontSize = 32;
     public int decimalPlaces = 0; // currently unused but kept for future extension
 

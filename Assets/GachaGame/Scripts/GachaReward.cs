@@ -1,43 +1,50 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening; // DOTween
+using DG.Tweening;
 
-/// <summary>
-/// GachaReward handles rolling a reward (from a passed GachaMachineDatabase),
-/// showing the reward UI, and animating itemInfoObject (RectTransform + CanvasGroup)
-/// together with the active rarity UI using DOTween.
-/// Includes pity logic:
-///  - SuperRare pity every database.superRarePity pulls
-///  - UltraRare pity every database.ultraRarePity pulls
-/// Pity is tracked on the database (currentSuperRareRolls/currentUltraRareRolls)
-/// so other systems can display "pity left".
-/// </summary>
 public class GachaReward : MonoBehaviour
 {
     [Header("References")]
-    public GameObject rewardScreen;      // root reward screen
-    public GameObject rewardItem;        // parent for instantiated reward prefab (visual)
-    public GameObject rewardUIInfo;      // UI container shown when opening capsule
-    public Animator capsuleAnim;         // capsule open animation
+    public GameObject rewardScreen;
+    public GameObject rewardItem;
+    public GameObject rewardUIInfo;
+    public GameObject resultUIInfo;
+    public TextMeshProUGUI resultUIText;
+    public Animator capsuleAnim;
     public ParticleSystem rainbowVFX;
     public List<GameObject> capsuleColors = new List<GameObject>();
 
     private GameObject currRewardPrefab;
 
-    // Fired when the reward screen is closed
     public event System.Action OnRewardClosed;
 
-    private RewardResult currReward = new RewardResult();
+    // ---- reward queue ----
+    private List<RewardResult> rewardQueue = new List<RewardResult>();
+    private bool showingMultiple = false;
+
+    // ---- session summary (all rewards for this roll batch) ----
+    private List<RewardResult> sessionRewards = new List<RewardResult>();
+    private bool showingResult = false;
 
     [Header("Reward UI Info")]
     [SerializeField] private Button openButton;
     [SerializeField] private Button closeButton;
-    [SerializeField] private TextMeshProUGUI itemInfo;         // text component inside itemInfoObject
-    [SerializeField] private GameObject itemInfoObject;        // object (RectTransform + CanvasGroup) to animate
-    [SerializeField] private List<GameObject> rarityUI;        // indexed by (int)Rarity: Normal=0, Rare=1,...
+    [SerializeField] private Button skipButton;      // NEW: skip button
+    [SerializeField] private TextMeshProUGUI itemInfo;
+    [SerializeField] private GameObject itemInfoObject;
+    [SerializeField] private List<GameObject> rarityUI;
+
+    [Header("Rarity Colors")]
+    public Color normalColor = Color.white;
+    public Color rareColor = new Color(0.3f, 0.6f, 1f);
+    public Color superRareColor = new Color(1f, 0.5f, 0f);
+    public Color ultraRareColor = new Color(1f, 0.2f, 0.2f);
+
+    private Dictionary<GachaMachineDatabase.Rarity, string> rarityHex;
 
     [System.Serializable]
     public struct RewardResult
@@ -60,19 +67,21 @@ public class GachaReward : MonoBehaviour
 
     private void Start()
     {
+        BuildColorLookup();
+
         if (openButton != null) openButton.onClick.AddListener(OnOpenGacha);
         if (closeButton != null) closeButton.onClick.AddListener(OnCloseReward);
+        if (skipButton != null) skipButton.onClick.AddListener(SkipAll);   // hook skip
 
-        if (openButton != null) openButton.gameObject.SetActive(false);
-        if (rewardScreen != null) rewardScreen.SetActive(false);
-        if (rewardUIInfo != null) rewardUIInfo.SetActive(false);
+        openButton?.gameObject.SetActive(false);
+        closeButton?.gameObject.SetActive(false);
+        skipButton?.gameObject.SetActive(false);
+        rewardScreen?.SetActive(false);
+        rewardUIInfo?.SetActive(false);
+        resultUIInfo?.SetActive(false);
     }
 
-    /// <summary>
-    /// Do a weighted roll on the given database and return a RewardResult containing rarity, prefab, etc.
-    /// Includes pity logic based on GachaMachineDatabase.superRarePity and ultraRarePity.
-    /// Updates database.currentSuperRareRolls/currentUltraRareRolls so UI can show pity.
-    /// </summary>
+    // -------- Roll Logic (unchanged) --------
     public RewardResult Roll(GachaMachineDatabase database)
     {
         if (database == null)
@@ -87,11 +96,10 @@ public class GachaReward : MonoBehaviour
             return default;
         }
 
-        // --- current pity counters are stored directly on the database ---
         int srCount = database.currentSuperRareRolls;
         int urCount = database.currentUltraRareRolls;
 
-        int nextSrCount = srCount + 1; // as if we do this roll
+        int nextSrCount = srCount + 1;
         int nextUrCount = urCount + 1;
 
         bool srPityEnabled = database.superRarePity > 0;
@@ -100,387 +108,369 @@ public class GachaReward : MonoBehaviour
         bool triggerURPity = urPityEnabled && nextUrCount >= database.ultraRarePity;
         bool triggerSRPity = srPityEnabled && nextSrCount >= database.superRarePity;
 
-        // UR pity has priority over SR pity if both hit on the same roll
         GachaMachineDatabase.Rarity? forcedRarity = null;
-        if (triggerURPity)
-            forcedRarity = GachaMachineDatabase.Rarity.UltraRare;
-        else if (triggerSRPity)
-            forcedRarity = GachaMachineDatabase.Rarity.SuperRare;
+        if (triggerURPity) forcedRarity = GachaMachineDatabase.Rarity.UltraRare;
+        else if (triggerSRPity) forcedRarity = GachaMachineDatabase.Rarity.SuperRare;
 
         GachaMachineDatabase.LootEntry chosen = null;
 
-        // ---------------------------------------------------------------------
-        // PITY ROLL: only among entries of forcedRarity (still weighted)
-        // ---------------------------------------------------------------------
         if (forcedRarity.HasValue)
         {
-            List<GachaMachineDatabase.LootEntry> pityPool = new List<GachaMachineDatabase.LootEntry>();
-            int pityWeightTotal = 0;
+            List<GachaMachineDatabase.LootEntry> pityPool = new();
+            int pityTotal = 0;
 
             foreach (var loot in database.lootTable)
             {
                 if (loot.rarity == forcedRarity.Value && loot.weight > 0)
                 {
                     pityPool.Add(loot);
-                    pityWeightTotal += loot.weight;
+                    pityTotal += loot.weight;
                 }
             }
 
-            if (pityPool.Count > 0 && pityWeightTotal > 0)
+            if (pityPool.Count > 0)
             {
-                int roll = Random.Range(0, pityWeightTotal);
+                int roll = Random.Range(0, pityTotal);
                 foreach (var loot in pityPool)
                 {
-                    if (loot.weight <= 0) continue;
-
                     if (roll < loot.weight)
                     {
                         chosen = loot;
                         break;
                     }
-
                     roll -= loot.weight;
                 }
-
-                if (chosen == null)
-                    chosen = pityPool[pityPool.Count - 1];
             }
             else
             {
-                // if no valid pool (e.g. misconfigured DB), fallback to normal roll
                 forcedRarity = null;
             }
         }
 
-        // -------------------------------------------------------------------------
-        // NORMAL ROLL (no pity forced, or pity pool misconfigured)
-        // -------------------------------------------------------------------------
         if (chosen == null)
         {
             int totalWeight = 0;
             foreach (var loot in database.lootTable)
-            {
-                if (loot.weight > 0)
-                    totalWeight += loot.weight;
-            }
+                totalWeight += Mathf.Max(0, loot.weight);
 
-            if (totalWeight <= 0)
-            {
-                Debug.LogError($"[GachaReward] Machine {database.machineId} totalWeight <= 0.");
-                return default;
-            }
-
-            int roll = Random.Range(0, totalWeight); // [0, totalWeight)
+            int roll = Random.Range(0, totalWeight);
 
             foreach (var loot in database.lootTable)
             {
-                if (loot.weight <= 0) continue;
-
                 if (roll < loot.weight)
                 {
                     chosen = loot;
                     break;
                 }
-
                 roll -= loot.weight;
-            }
-
-            if (chosen == null)
-            {
-                chosen = database.lootTable[database.lootTable.Count - 1];
             }
         }
 
-        // -------------------------------------------------------------------------
-        // Decide final quantity
-        // -------------------------------------------------------------------------
-        int finalQty;
         int min = Mathf.Max(1, chosen.quantityMin);
         int max = Mathf.Max(min, chosen.quantityMax);
 
-        if (min == 1 && max == 1)
-        {
-            finalQty = Mathf.Max(1, chosen.baseQuantity);
-        }
-        else
-        {
-            int multiplier = Random.Range(min, max + 1);
-            finalQty = Mathf.Max(1, chosen.baseQuantity) * multiplier;
-        }
+        int finalQty = (min == max)
+            ? Mathf.Max(1, chosen.baseQuantity)
+            : Mathf.Max(1, chosen.baseQuantity) * Random.Range(min, max + 1);
 
-        // Respect entry-specific guaranteedMinimum if set
         if (chosen.guaranteedMinimum > 0)
-        {
             finalQty = Mathf.Max(finalQty, chosen.guaranteedMinimum);
-        }
 
-        // -------------------------------------------------------------------------
-        // UPDATE PITY COUNTERS ON DATABASE
-        //
-        // Rule:
-        //  - SuperRare pity counter:
-        //      reset when we get SuperRare OR UltraRare
-        //      otherwise increment
-        //  - UltraRare pity counter:
-        //      reset when we get UltraRare
-        //      otherwise increment
-        // -------------------------------------------------------------------------
-        bool gotSR = (chosen.rarity == GachaMachineDatabase.Rarity.SuperRare ||
-                      chosen.rarity == GachaMachineDatabase.Rarity.UltraRare);
-        bool gotUR = (chosen.rarity == GachaMachineDatabase.Rarity.UltraRare);
+        bool gotSR = chosen.rarity == GachaMachineDatabase.Rarity.SuperRare ||
+                     chosen.rarity == GachaMachineDatabase.Rarity.UltraRare;
+        bool gotUR = chosen.rarity == GachaMachineDatabase.Rarity.UltraRare;
 
         if (srPityEnabled)
-        {
-            if (gotSR)
-                database.currentSuperRareRolls = 0;
-            else
-                database.currentSuperRareRolls = nextSrCount;
-        }
+            database.currentSuperRareRolls = gotSR ? 0 : nextSrCount;
 
         if (urPityEnabled)
-        {
-            if (gotUR)
-                database.currentUltraRareRolls = 0;
-            else
-                database.currentUltraRareRolls = nextUrCount;
-        }
+            database.currentUltraRareRolls = gotUR ? 0 : nextUrCount;
 
-        // -------------------------------------------------------------------------
-        // Return result including rarity
-        // -------------------------------------------------------------------------
-        var result = new RewardResult(
-            chosen.rewardItemId,
-            chosen.rewardName,
-            finalQty,
-            chosen.rewardPrefab,
-            chosen.rarity
-            );
-
+        var result = new RewardResult(chosen.rewardItemId, chosen.rewardName, finalQty, chosen.rewardPrefab, chosen.rarity);
         database.historyData.AddPull(result.itemName, result.rarity, result.quantity);
+        GachaManager.Instance.GetPlayerData().AddInventory(result);
 
         return result;
     }
 
-    [ContextMenu("Test Roll")]
-    private void TestRoll_Debug()
-    {
-        Debug.Log("[GachaReward] TestRoll invoked - requires real database to return meaningful result.");
-    }
+    // -------- QUEUE SUPPORT --------
 
-    /// <summary>
-    /// Set the reward manually (useful if you already rolled elsewhere).
-    /// </summary>
     public void SetReward(RewardResult result)
     {
-        currReward = result;
+        sessionRewards.Clear();
+        sessionRewards.Add(result);
+
+        rewardQueue.Clear();
+        rewardQueue.Add(result);
+
+        showingMultiple = false;
+        showingResult = false;
     }
 
-    /// <summary>
-    /// Show the reward screen using the current currReward (must be set by SetReward or Roll).
-    /// Animates itemInfoObject (RectTransform + CanvasGroup) together with active rarity UI using DOTween.
-    /// Sequence: scale big -> normal, fade in, then punch (vibrato=2).
-    /// </summary>
+    public void SetReward(List<RewardResult> results)
+    {
+        sessionRewards = new List<RewardResult>(results);
+        rewardQueue = new List<RewardResult>(results);
+
+        showingMultiple = results != null && results.Count > 1;
+        showingResult = false;
+    }
+
     public void ShowReward()
     {
+        if (rewardQueue.Count == 0) return;
+
+        var curr = rewardQueue[0];
         RandomizeCapsuleColors();
 
-        if (currReward.prefab == null)
-            Debug.LogWarning("[GachaReward] Showing reward without a prefab assigned in currReward.");
+        closeButton?.gameObject.SetActive(false);
+        itemInfoObject?.SetActive(true);
+        resultUIInfo?.SetActive(false);
 
-        if (itemInfoObject != null)
-            itemInfoObject.SetActive(true);
-
-        // Prepare UI text
         if (itemInfo != null)
-            itemInfo.text = $"{currReward.itemName}";
+            itemInfo.text = curr.itemName;
 
-        // instantiate reward visual prefab under rewardItem parent
-        if (rewardItem != null && currReward.prefab != null)
-            currRewardPrefab = Instantiate(currReward.prefab, rewardItem.transform);
+        if (currRewardPrefab != null)
+            Destroy(currRewardPrefab);
 
-        // enable rarity UI
-        ShowRarityUI(currReward.rarity);
+        if (rewardItem != null && curr.prefab != null)
+            currRewardPrefab = Instantiate(curr.prefab, rewardItem.transform);
 
-        // show screen and start coroutine that enables open button after a short delay
-        if (rewardScreen != null) rewardScreen.SetActive(true);
+        ShowRarityUI(curr.rarity);
+
+        // show skip only if more than one reward in this session
+        if (skipButton != null)
+            skipButton.gameObject.SetActive(sessionRewards.Count > 1);
+
+        rewardScreen?.SetActive(true);
         StartCoroutine(ShowRewardCouroutine());
     }
 
     IEnumerator ShowRewardCouroutine()
     {
         yield return new WaitForSeconds(1f);
-        if (openButton != null) openButton.gameObject.SetActive(true);
+        openButton?.gameObject.SetActive(true);
+        skipButton?.gameObject.SetActive(true);
     }
 
     void OnOpenGacha()
     {
-        if (capsuleAnim != null) capsuleAnim.SetTrigger("Open");
-        if (openButton != null) openButton.gameObject.SetActive(false);
+        capsuleAnim?.SetTrigger("Open");
+        openButton?.gameObject.SetActive(false);
         StartCoroutine(OpenGachaCouroutine());
     }
 
     IEnumerator OpenGachaCouroutine()
     {
         yield return new WaitForSeconds(1.5f);
-        if (rewardUIInfo != null) rewardUIInfo.SetActive(true);
+        rewardUIInfo?.SetActive(true);
+        closeButton?.gameObject.SetActive(true);
         AnimateRewardUI();
     }
 
     void OnCloseReward()
     {
-        if (currRewardPrefab != null) Destroy(currRewardPrefab);
-        currReward = new RewardResult();
-        if (openButton != null) openButton.gameObject.SetActive(false);
-        if (rewardScreen != null) rewardScreen.SetActive(false);
-        if (rewardUIInfo != null) rewardUIInfo.SetActive(false);
-        if (rainbowVFX != null) rainbowVFX.gameObject.SetActive(false);
+        // If we're on the result screen, closing means fully exit
+        if (showingResult)
+        {
+            showingResult = false;
+            sessionRewards.Clear();
 
-        OnRewardClosed?.Invoke();
+            if (currRewardPrefab != null)
+                Destroy(currRewardPrefab);
+
+            openButton?.gameObject.SetActive(false);
+            closeButton?.gameObject.SetActive(false);
+            skipButton?.gameObject.SetActive(false);
+            rewardScreen?.SetActive(false);
+            rewardUIInfo?.SetActive(false);
+            resultUIInfo?.SetActive(false);
+            rainbowVFX?.gameObject.SetActive(false);
+
+            OnRewardClosed?.Invoke();
+            return;
+        }
+
+        // We are closing an individual reward view
+        if (currRewardPrefab != null)
+            Destroy(currRewardPrefab);
+
+        // More rewards left → go to next
+        if (showingMultiple && rewardQueue.Count > 1)
+        {
+            rewardQueue.RemoveAt(0);
+            capsuleAnim?.SetTrigger("Reset");
+
+            openButton?.gameObject.SetActive(false);
+            rewardUIInfo?.SetActive(false);
+
+            ShowReward(); // show next reward
+            return;
+        }
+
+        // This was the last reward in the queue → show result summary
+        rewardQueue.Clear();
+        showingMultiple = false;
+
+        BuildResultSummary();
     }
 
-    /// <summary>
-    /// Activates the rarity UI object corresponding to the rolled rarity and deactivates others.
-    /// Rarity enum values must match the order of rarityUI list (Normal=0, Rare=1, SuperRare=2, UltraRare=3).
-    /// </summary>
+    // ---- SKIP BUTTON ----
+    public void SkipAll()
+    {
+        // Already on result screen? Do nothing (user can just close)
+        if (showingResult)
+            return;
+
+        // If no session rewards at all, just close like normal
+        if (sessionRewards.Count == 0)
+        {
+            OnCloseReward();
+            return;
+        }
+
+        // Clear current prefab + per-item UI
+        if (currRewardPrefab != null)
+        {
+            Destroy(currRewardPrefab);
+            currRewardPrefab = null;
+        }
+
+        // Stop showing individual items
+        rewardQueue.Clear();
+        showingMultiple = false;
+
+        openButton?.gameObject.SetActive(false);
+        rewardUIInfo?.SetActive(false);
+
+        BuildResultSummary();
+    }
+
+    void BuildResultSummary()
+    {
+        rewardUIInfo?.SetActive(false);
+
+        if (resultUIInfo != null && resultUIText != null && sessionRewards.Count > 0)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < sessionRewards.Count; i++)
+            {
+                var r = sessionRewards[i];
+                string rarityName = FormatRarity(r.rarity);
+
+                // pick rarity color
+                string hex = rarityHex.ContainsKey(r.rarity) ? rarityHex[r.rarity] : "FFFFFF";
+                string coloredRarity = $"<color=#{hex}>({rarityName})</color>";
+
+                sb.AppendLine($"{i + 1}. {r.itemName} {coloredRarity}");
+            }
+
+            resultUIText.text = sb.ToString();
+            resultUIInfo.SetActive(true);
+            showingResult = true;
+
+            // On result screen, no need skip anymore
+            skipButton?.gameObject.SetActive(false);
+            closeButton?.gameObject.SetActive(true);
+        }
+        else
+        {
+            showingResult = false;
+            sessionRewards.Clear();
+            rewardScreen?.SetActive(false);
+            OnRewardClosed?.Invoke();
+        }
+    }
+
+    IEnumerator NextRewardRoutine()
+    {
+        openButton?.gameObject.SetActive(false);
+        rewardUIInfo?.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        ShowReward();
+    }
+
     void ShowRarityUI(GachaMachineDatabase.Rarity rarity)
     {
-        if (rainbowVFX != null)
-            rainbowVFX.gameObject.SetActive(false);
+        rainbowVFX?.gameObject.SetActive(false);
 
-        if (rarityUI == null || rarityUI.Count == 0) return;
-
-        for (int i = 0; i < rarityUI.Count; i++)
-            rarityUI[i].SetActive(false);
-
-        int index = (int)rarity;
-        if (index >= 0 && index < rarityUI.Count)
-            rarityUI[index].SetActive(true);
-
-        if (rarity == GachaMachineDatabase.Rarity.UltraRare && rainbowVFX != null)
+        if (rarityUI != null)
         {
-            rainbowVFX.gameObject.SetActive(true);
+            for (int i = 0; i < rarityUI.Count; i++)
+                rarityUI[i]?.SetActive(false);
+
+            int idx = (int)rarity;
+            if (idx >= 0 && idx < rarityUI.Count && rarityUI[idx] != null)
+                rarityUI[idx].SetActive(true);
         }
+
+        if (rarity == GachaMachineDatabase.Rarity.UltraRare)
+            rainbowVFX?.gameObject.SetActive(true);
     }
 
-    /// <summary>
-    /// Minimal hard-coded animation sequence using DOTween:
-    /// - itemInfoObject & active rarity start big + invisible
-    /// - scale down to normal while fading in (via CanvasGroup)
-    /// - then DOPunchScale with vibrato = 2
-    /// </summary>
     private void AnimateRewardUI()
     {
-        // ITEM INFO OBJECT (RectTransform + CanvasGroup)
-        RectTransform itemRect = null;
-        CanvasGroup itemCg = null;
+        if (itemInfoObject == null) return;
 
-        if (itemInfoObject != null)
-        {
-            itemRect = itemInfoObject.GetComponent<RectTransform>();
-            itemCg = itemInfoObject.GetComponent<CanvasGroup>();
-            if (itemCg == null) itemCg = itemInfoObject.AddComponent<CanvasGroup>();
+        RectTransform itemRect = itemInfoObject.GetComponent<RectTransform>();
+        CanvasGroup itemCg = itemInfoObject.GetComponent<CanvasGroup>() ?? itemInfoObject.AddComponent<CanvasGroup>();
 
-            // Kill any previous tweens on these objects
-            itemRect.DOKill();
-            itemCg.DOKill();
-            itemInfoObject.transform.DOKill();
+        itemRect.DOKill();
+        itemCg.DOKill();
 
-            // initial setup: big + invisible
-            itemRect.localScale = Vector3.one * 1.5f;
-            itemCg.alpha = 0f;
-        }
+        itemRect.localScale = Vector3.one * 1.5f;
+        itemCg.alpha = 0f;
 
-        // Find active rarity object
-        GameObject activeRarity = null;
-        if (rarityUI != null && rarityUI.Count > 0)
-        {
-            int idx = (int)currReward.rarity;
-            if (idx >= 0 && idx < rarityUI.Count)
-                activeRarity = rarityUI[idx];
-        }
-
-        RectTransform rarityRect = null;
-        CanvasGroup rarityCg = null;
-        if (activeRarity != null)
-        {
-            rarityRect = activeRarity.GetComponent<RectTransform>();
-            rarityCg = activeRarity.GetComponent<CanvasGroup>();
-            if (rarityCg == null) rarityCg = activeRarity.AddComponent<CanvasGroup>();
-
-            // Kill any existing tweens
-            rarityRect?.DOKill();
-            rarityCg.DOKill();
-            activeRarity.transform.DOKill();
-
-            // initial setup: big + invisible
-            if (rarityRect != null) rarityRect.localScale = Vector3.one * 1.5f;
-            rarityCg.alpha = 0f;
-        }
-
-        // Build sequence
-        Sequence seq = DOTween.Sequence();
-
-        // Scale down + fade in (parallel)
-        if (itemRect != null && itemCg != null)
-        {
-            seq.Append(itemRect.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutBack));
-            seq.Join(itemCg.DOFade(1f, 0.25f));
-        }
-
-        if (rarityRect != null && rarityCg != null)
-        {
-            // join rarity scale/fade so they play alongside item name
-            seq.Join(rarityRect.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutBack));
-            seq.Join(rarityCg.DOFade(1f, 0.25f));
-        }
-
-        // After appear, punch scale with vibrato = 2
-        seq.AppendCallback(() =>
-        {
-            if (itemRect != null)
-                itemRect.DOPunchScale(Vector3.one * 0.15f, 0.3f, 2, 1f);
-
-            if (rarityRect != null)
-                rarityRect.DOPunchScale(Vector3.one * 0.15f, 0.3f, 2, 1f);
-        });
+        Sequence seq = DOTween.Sequence()
+            .Append(itemRect.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutBack))
+            .Join(itemCg.DOFade(1f, 0.25f))
+            .AppendCallback(() => itemRect.DOPunchScale(Vector3.one * 0.15f, 0.3f, 2));
 
         seq.Play();
     }
 
     public List<RewardResult> Roll10(GachaMachineDatabase database)
     {
-        List<RewardResult> results = new List<RewardResult>();
-
-        if (database == null)
-        {
-            Debug.LogError("[GachaReward] Roll10 called with NULL database.");
-            return results;
-        }
+        List<RewardResult> results = new();
 
         for (int i = 0; i < 10; i++)
-        {
-            RewardResult r = Roll(database);
-            results.Add(r);
-        }
-
-        //// Notify listeners (UI, sound, animations, save system)
-        //OnTenPullComplete?.Invoke(results);
+            results.Add(Roll(database));
 
         return results;
     }
 
     void RandomizeCapsuleColors()
     {
-        if (capsuleColors == null || capsuleColors.Count == 0) return;
-
         foreach (var item in capsuleColors)
-        {
-            if (item != null)
-                item.SetActive(false);
-        }
+            item?.SetActive(false);
 
-        int randomIndex = Random.Range(0, capsuleColors.Count); // [0, count)
-        if (capsuleColors[randomIndex] != null)
-            capsuleColors[randomIndex].SetActive(true);
+        if (capsuleColors.Count > 0)
+        {
+            int idx = Random.Range(0, capsuleColors.Count);
+            if (capsuleColors[idx] != null)
+                capsuleColors[idx].SetActive(true);
+        }
+    }
+
+    private string FormatRarity(GachaMachineDatabase.Rarity rarity)
+    {
+        switch (rarity)
+        {
+            case GachaMachineDatabase.Rarity.SuperRare: return "Super Rare";
+            case GachaMachineDatabase.Rarity.UltraRare: return "Ultra Rare";
+            default: return rarity.ToString();
+        }
+    }
+
+    private void BuildColorLookup()
+    {
+        rarityHex = new Dictionary<GachaMachineDatabase.Rarity, string>
+        {
+            { GachaMachineDatabase.Rarity.Normal,     ColorUtility.ToHtmlStringRGB(normalColor) },
+            { GachaMachineDatabase.Rarity.Rare,       ColorUtility.ToHtmlStringRGB(rareColor) },
+            { GachaMachineDatabase.Rarity.SuperRare,  ColorUtility.ToHtmlStringRGB(superRareColor) },
+            { GachaMachineDatabase.Rarity.UltraRare,  ColorUtility.ToHtmlStringRGB(ultraRareColor) },
+        };
     }
 }

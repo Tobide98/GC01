@@ -34,7 +34,7 @@ public class StoreScript : MonoBehaviour
     private void OnBuyItem(StoreObject item)
     {
         //Debug.Log("Buying: " + item.title + " for " + item.tokenValue + " tokens");
-        ModalManager.Show("Buy Item", "Are you sure you want to pick this item?",
+        ModalManager.Show("Buy Item", $"Are you sure you want to purchase {item.title} for {item.price} diamonds?",
       new[] { new ModalButton() { Text = "NO" }, new ModalButton() { Text = "YES", Callback = CheckPlayerBalance } });
         currSelectedReward = item.tokenValue;
         currPrice = item.price;
@@ -50,7 +50,7 @@ public class StoreScript : MonoBehaviour
         }
         else
         {
-            ModalManager.Show("Buy Item", "Purchase failed your balance in insufficient",
+            ModalManager.Show("Buy Item", "Purchase failed your diamond balance in insufficient",
    new[] { new ModalButton() { Text = "OK" } });
         }
     }

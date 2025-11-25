@@ -7,6 +7,7 @@ public class GachaMachineSelector : MonoBehaviour
 {
     [Header("UI Reference")]
     public TextMeshProUGUI priceTagText;
+    public TextMeshProUGUI priceTagTenText;
     public Image bannerImage;
     public TextMeshProUGUI PityLeftText;
     public GameObject gachaDropRateUI;
@@ -191,7 +192,8 @@ public class GachaMachineSelector : MonoBehaviour
     {
         var machine = GetCurrentSelectedMachine();
         var database = machine.GetMachineDatabase();
-        priceTagText.text = $"x{machine.GetGachaPrice():N0}";
+        priceTagText.text = $"{machine.GetGachaPrice():N0}";
+        priceTagTenText.text = $"{machine.GetGachaPriceTen():N0}";
         bannerImage.sprite = database.bannerImage;
         int pityLeft = machine.GetURPityLeft();
         PityLeftText.text = $"<color=#FFA500>{pityLeft}</color> pulls left until";

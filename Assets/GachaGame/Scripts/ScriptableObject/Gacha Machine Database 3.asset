@@ -15,15 +15,16 @@ MonoBehaviour:
   machineId: 3
   displayName: GachaMachine_3001
   machinePrice: 700
+  machinePriceTen: 6800
   bannerImage: {fileID: 21300000, guid: de9a6c815d13c70419c5e4c37825e1cc, type: 3}
   historyData: {fileID: 11400000, guid: 4b2d3a34da28e8b4daad49ab8b850b6a, type: 2}
   lootTable:
   - rewardPrefab: {fileID: 2795397902362475942, guid: 72c47fdc43d84b243bdc109c284341d6,
       type: 3}
-    rewardItemId: 2001
+    rewardItemId: 3001
     rewardName: 'Bunny Slime '
     baseQuantity: 1
-    weight: 50
+    weight: 70
     rarity: 1
     quantityMin: 1
     quantityMax: 1
@@ -31,18 +32,18 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 6891580169314388076, guid: 66ae442726d1cf4428dacb34edd61ac4,
       type: 3}
-    rewardItemId: 2002
+    rewardItemId: 3002
     rewardName: Leaf Slime
     baseQuantity: 1
-    weight: 50
-    rarity: 1
+    weight: 20
+    rarity: 2
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 7099655024501674456, guid: 8760cc9eb30a2b340b14499b6e150dc4,
       type: 3}
-    rewardItemId: 2003
+    rewardItemId: 3003
     rewardName: Sprout Slime
     baseQuantity: 1
     weight: 100
@@ -53,7 +54,7 @@ MonoBehaviour:
     guaranteedMinimum: 0
   - rewardPrefab: {fileID: 6705402075998324148, guid: d941199d4a58fcb45adc75ea8e37c42c,
       type: 3}
-    rewardItemId: 2004
+    rewardItemId: 3004
     rewardName: Normal Slime
     baseQuantity: 1
     weight: 100
@@ -62,18 +63,18 @@ MonoBehaviour:
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
-  - rewardPrefab: {fileID: 919132149155446097, guid: 2e6931140dfc0a342b8aaca58929e860,
+  - rewardPrefab: {fileID: 3587189672730523316, guid: 708e7c08397d16c4a8925bdaa7baca16,
       type: 3}
-    rewardItemId: 2005
-    rewardName: Viking Helmet
+    rewardItemId: 3005
+    rewardName: Coin Model
     baseQuantity: 1
-    weight: 10
+    weight: 5
     rarity: 3
     quantityMin: 1
     quantityMax: 1
     highestTrigger: 0
     guaranteedMinimum: 0
-  superRarePity: 5
-  ultraRarePity: 10
+  superRarePity: 10
+  ultraRarePity: 80
   currentSuperRareRolls: 0
   currentUltraRareRolls: 0

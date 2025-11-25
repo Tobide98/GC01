@@ -237,6 +237,12 @@ public class GachaController : MonoBehaviour
         return database.machinePrice;
     }
 
+    public int GetGachaPriceTen()
+    {
+        return database.machinePriceTen; 
+    }
+
+
     public Animator GetMachineAnim()
     {
         return gachaAnim;

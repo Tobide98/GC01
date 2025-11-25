@@ -11,6 +11,7 @@ public class GachaManager : MonoBehaviour
     [Header("UI Reference")]
     [SerializeField] private GameObject machineStartInfo;
     [SerializeField] private Button startButton;
+    [SerializeField] private Button startTenButton;
     [SerializeField] private MainMenu mainMenu;
     private Tween fadeTween;
     private Tween scaleTween;
@@ -43,14 +44,16 @@ public class GachaManager : MonoBehaviour
     {
         mainMenu.gameObject.SetActive(true);
         startButton.onClick.AddListener(StartGacha);
+        startTenButton.onClick.AddListener(StartGacha10);
         gachaRewardScript.OnRewardClosed += HandleRewardClosed;
+        currGachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
     }
 
     public void StartGacha()
     {
         ModalManager.Show(
             "Start Gacha",
-            "Are you sure you want to pick this gacha?",
+            $"Are you sure you want to pick this gacha for <color=#FF2A00>{currGachaMachine.GetGachaPrice()}</color> tokens?",
             new[]
             {
                 new ModalButton() { Text = "NO"},
@@ -58,12 +61,12 @@ public class GachaManager : MonoBehaviour
             });
     }
 
-    // 10-pull entry point (hook this to a 10x button)
+    // ---- 10 Pull Entry ----
     public void StartGacha10()
     {
         ModalManager.Show(
             "Start 10x Gacha",
-            "Are you sure you want to do 10 pulls on this gacha?",
+            $"Are you sure you want to do 10 pulls on this gacha for <color=#FF2A00>{currGachaMachine.GetGachaPriceTen()}</color> tokens?",
             new[]
             {
                 new ModalButton() { Text = "NO"},
@@ -77,7 +80,7 @@ public class GachaManager : MonoBehaviour
         if (playerScirpt.CheckIsSufficientCoin(gachaMachine.GetGachaPrice()))
         {
             currGachaMachine = gachaMachine;
-            isTenPull = false; // single pull mode
+            isTenPull = false;
             playerScirpt.ReducePlayerCoin(currGachaMachine.GetGachaPrice());
             SelectGacha(currGachaMachine);
             currGachaMachine.OnMaxTurnsReached.AddListener(OnMaxTurns);
@@ -91,16 +94,18 @@ public class GachaManager : MonoBehaviour
         }
     }
 
-    // NEW: Balance check for 10-pull (cost = price * 10)
+    // Updated: 10 Pull Price + Mode Switch
     private void CheckTokenBalance10()
     {
         var gachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
-        int totalPrice = gachaMachine.GetGachaPrice() * 10;
+
+        // Uses GetGachaPriceTen() from your script
+        int totalPrice = gachaMachine.GetGachaPriceTen();
 
         if (playerScirpt.CheckIsSufficientCoin(totalPrice))
         {
             currGachaMachine = gachaMachine;
-            isTenPull = true; // 10-pull mode
+            isTenPull = true;
             playerScirpt.ReducePlayerCoin(totalPrice);
             SelectGacha(currGachaMachine);
             currGachaMachine.OnMaxTurnsReached.AddListener(OnMaxTurns);
@@ -116,7 +121,7 @@ public class GachaManager : MonoBehaviour
 
     private void OnMaxTurns()
     {
-        // Single pull → 1 roll
+        // ---- SINGLE PULL ----
         if (!isTenPull)
         {
             var reward = gachaRewardScript.Roll(currGachaMachine.GetMachineDatabase());
@@ -125,19 +130,13 @@ public class GachaManager : MonoBehaviour
         }
         else
         {
-            // 10-pull → 10 rolls; show the last one in the existing reward UI
-            GachaReward.RewardResult lastReward = default;
+            // ---- 10 PULL ----
+            List<GachaReward.RewardResult> results = gachaRewardScript.Roll10(currGachaMachine.GetMachineDatabase());
 
-            for (int i = 0; i < 10; i++)
-            {
-                lastReward = gachaRewardScript.Roll(currGachaMachine.GetMachineDatabase());
-            }
-
-            gachaRewardScript.SetReward(lastReward);
+            gachaRewardScript.SetReward(results); // now sends full reward list
             gachaRewardScript.ShowReward();
 
-            // reset mode back to single after finishing this 10-pull
-            isTenPull = false;
+            isTenPull = false; // reset mode
         }
 
         currGachaMachine.isAvaliable = false;
@@ -156,6 +155,7 @@ public class GachaManager : MonoBehaviour
         StartFOVRoutine(normalFOV, focusFOV, duration);
         StartCoroutine(StartMachine());
     }
+
     void HandleRewardClosed()
     {
         OnFinishGacha();
@@ -175,7 +175,6 @@ public class GachaManager : MonoBehaviour
         ShowMachineInfo(true);
     }
 
-    // --- Camera Focus ---
     void StartFOVRoutine(float from, float to, float time)
     {
         if (fovRoutine != null)
@@ -187,8 +186,7 @@ public class GachaManager : MonoBehaviour
     IEnumerator FOVRoutine(float from, float to, float time)
     {
         Camera cam = Camera.main;
-        if (cam == null)
-            yield break;
+        if (cam == null) yield break;
 
         float t = 0f;
         cam.fieldOfView = from;
@@ -214,14 +212,13 @@ public class GachaManager : MonoBehaviour
     public void ShowMachineInfo(bool fadeIn)
     {
         var canvasGroup = machineStartInfo.GetComponent<CanvasGroup>();
+
         fadeTween?.Kill();
         scaleTween?.Kill();
+
         if (fadeIn)
         {
-            // Make sure the object is active
             machineStartInfo.SetActive(true);
-
-            // Prepare for fade in
             canvasGroup.alpha = 0f;
             machineStartInfo.transform.localScale = Vector3.one * 0.7f;
 
@@ -232,26 +229,40 @@ public class GachaManager : MonoBehaviour
         }
         else
         {
-            // Prepare for fade out
-            canvasGroup.alpha = 1f;
-            machineStartInfo.transform.localScale = Vector3.one * 1f;
-
-            fadeTween = canvasGroup
-                .DOFade(0f, 0.3f);
-
+            fadeTween = canvasGroup.DOFade(0f, 0.3f);
             scaleTween = machineStartInfo.transform
                 .DOScale(1.2f, 0.3f)
                 .SetEase(Ease.InBack, 1.2f)
-                .OnComplete(() =>
-                {
-                    // Deactivate object only after animation is fully done
-                    machineStartInfo.SetActive(false);
-                });
+                .OnComplete(() => machineStartInfo.SetActive(false));
         }
     }
 
     public PlayerScript GetPlayerData()
     {
         return playerScirpt;
+    }
+
+    public void ForceEnableSwipe(bool enable)
+    {
+        if (enable)
+        {
+            gachaMachineSelector.EnableSwipe();
+        }
+        else
+        {
+            gachaMachineSelector.DisableSwipe();
+        }
+    }
+
+    public void ChangeFOVCamera(bool isZoom)
+    {
+        if (isZoom)
+        {
+            StartFOVRoutine(normalFOV, focusFOV, duration);
+        }
+        else
+        {
+            StartFOVRoutine(focusFOV, normalFOV, duration);
+        }
     }
 }

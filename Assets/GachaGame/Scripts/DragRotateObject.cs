@@ -31,8 +31,8 @@ public class DragRotateObject : MonoBehaviour
         center = (mr != null) ? mr.bounds.center : transform.position;
 
         // Store starting values
-        initialRotation = Quaternion.identity;
-        initialPosition = Vector3.zero;
+        initialRotation = this.transform.localRotation;
+        initialPosition = this.transform.localPosition;
     }
 
     void Update()
