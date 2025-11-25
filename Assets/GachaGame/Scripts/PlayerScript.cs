@@ -14,9 +14,6 @@ public class PlayerScript : MonoBehaviour
     {
         UpdateUI();
     }
-
-    // ------------------- COIN -------------------
-
     public bool CheckIsSufficientCoin(int price)
     {
         return playerData != null && playerData.HasEnoughCoin(price);

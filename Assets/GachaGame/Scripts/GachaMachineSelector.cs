@@ -67,7 +67,6 @@ public class GachaMachineSelector : MonoBehaviour
 
         if (historyInfoButton != null)
             historyInfoButton.onClick.AddListener(ShowHistoryInfo);
-        // ----------------------------------
 
         parentTargetPos = machinesParent.position;
         RecalculateParentTarget(true);
@@ -109,9 +108,7 @@ public class GachaMachineSelector : MonoBehaviour
         }
     }
 
-    // -----------------------------------------------------------------
     // BUTTON FUNCTIONS YOU CAN CALL FROM UI OR FROM SCRIPT
-    // -----------------------------------------------------------------
 
     public void OnNextButtonPressed()
     {
@@ -122,8 +119,6 @@ public class GachaMachineSelector : MonoBehaviour
     {
         SelectPrevious();
     }
-
-    // -----------------------------------------------------------------
 
     void SelectNext()
     {
@@ -157,9 +152,7 @@ public class GachaMachineSelector : MonoBehaviour
             machinesParent.position = parentTargetPos;
     }
 
-    // ---------------------------------------------------
     // SWIPE ENABLE / DISABLE
-    // ---------------------------------------------------
     public void EnableSwipe()
     {
         swipeEnabled = true;
@@ -175,9 +168,7 @@ public class GachaMachineSelector : MonoBehaviour
         nextButton.gameObject.SetActive(swipeEnabled);
     }
 
-    // ---------------------------------------------------
     // GET CURRENT SELECTED MACHINE
-    // ---------------------------------------------------
     public GachaController GetCurrentSelectedMachine()
     {
         return machines[currentIndex].gameObject.GetComponent<GachaController>();

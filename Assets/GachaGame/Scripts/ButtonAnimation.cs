@@ -41,10 +41,6 @@ public class ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    // ---------------------------------------------------------
-    // Idle Bubble Animation
-    // ---------------------------------------------------------
-
     private void PlayIdleLoop()
     {
         if (isUsingIdle)
@@ -68,10 +64,6 @@ public class ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPointerExit
         idleSeq?.Kill();
     }
 
-    // ---------------------------------------------------------
-    // Hover
-    // ---------------------------------------------------------
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         StopIdleLoop();
@@ -88,10 +80,6 @@ public class ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPointerExit
             .SetEase(Ease.OutQuad)
             .OnComplete(PlayIdleLoop);
     }
-
-    // ---------------------------------------------------------
-    // Click
-    // ---------------------------------------------------------
 
     public void OnPointerClick(PointerEventData eventData)
     {

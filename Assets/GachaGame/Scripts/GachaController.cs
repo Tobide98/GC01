@@ -53,14 +53,11 @@ public class GachaController : MonoBehaviour
 
     void Update()
     {
-        // -----------------------
         // IDLE TIMER & AUTO-SPIN
-        // -----------------------
         if (isAvaliable)
         {
             if (HasUserInputThisFrame())
             {
-                // Touch/input resets the idle timer (postpones auto-spin).
                 idleTimer = 0f;
             }
             else
@@ -72,7 +69,7 @@ public class GachaController : MonoBehaviour
             if (enableAutoSpin &&
                 !isAutoSpinning &&
                 !isRotating &&
-                points < maxTurns &&                 // <-- changed: allow auto-spin even if points > 0
+                points < maxTurns &&               
                 idleTimer >= idleTimeToAutoSpin)
             {
                 StartCoroutine(AutoSpinRoutine());
@@ -83,9 +80,7 @@ public class GachaController : MonoBehaviour
             idleTimer = 0f;
         }
 
-        // -----------------------
         // MANUAL SPIN INPUT
-        // -----------------------
         if (Input.GetMouseButtonDown(0))
         {
             if (!isAvaliable && !IsMouseOverKnob()) return;
@@ -140,9 +135,7 @@ public class GachaController : MonoBehaviour
         }
     }
 
-    // -----------------------
     // AUTO-SPIN COROUTINE (spins remaining turns only)
-    // -----------------------
     private IEnumerator AutoSpinRoutine()
     {
         isAutoSpinning = true;
@@ -197,8 +190,6 @@ public class GachaController : MonoBehaviour
 
         OnMaxTurnsReached?.Invoke();
     }
-
-    // ... (other helper methods unchanged) ...
 
     bool TryGetMouseOnPlane(out Vector3 hitPoint)
     {
@@ -256,7 +247,7 @@ public class GachaController : MonoBehaviour
     public int GetURPityLeft()
     {
         if (database == null || database.ultraRarePity <= 0)
-            return -1; // no UR pity
+            return -1; 
 
         return Mathf.Max(0, database.ultraRarePity - database.currentUltraRareRolls);
     }
@@ -264,7 +255,7 @@ public class GachaController : MonoBehaviour
     public int GetSRPityLeft()
     {
         if (database == null || database.superRarePity <= 0)
-            return -1; // no SR pity
+            return -1; 
 
         return Mathf.Max(0, database.superRarePity - database.currentSuperRareRolls);
     }

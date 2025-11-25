@@ -52,10 +52,6 @@ public class GachaProbabilityInfo : MonoBehaviour
         database = databaseSelected;
         Refresh();
     }
-
-    /// <summary>
-    /// Call this whenever the loot table or colors change.
-    /// </summary>
     public void Refresh()
     {
         if (probabilityText == null)
@@ -179,7 +175,6 @@ public class GachaProbabilityInfo : MonoBehaviour
 
     private string GetRarityDisplayName(GachaMachineDatabase.Rarity rarity)
     {
-        // Custom spacing for your enum names
         switch (rarity)
         {
             case GachaMachineDatabase.Rarity.Normal: return "Normal";
@@ -213,7 +208,7 @@ public class GachaProbabilityInfo : MonoBehaviour
     private IEnumerator TypeRoutine(string fullText)
     {
         probabilityText.text = fullText;
-        probabilityText.ForceMeshUpdate();   // ensure textInfo is up to date
+        probabilityText.ForceMeshUpdate();   
 
         int totalChars = probabilityText.textInfo.characterCount;
         probabilityText.maxVisibleCharacters = 0;

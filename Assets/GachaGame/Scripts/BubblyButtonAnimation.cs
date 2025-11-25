@@ -15,7 +15,7 @@ public class BubblyButtonAnimation : MonoBehaviour
     [SerializeField] private float elasticity = 0.8f;
 
     [Header("Timing")]
-    [SerializeField] private float interval = 0.7f; // pause between each punch
+    [SerializeField] private float interval = 0.7f; 
 
     private Sequence punchSeq;
 
@@ -26,7 +26,6 @@ public class BubblyButtonAnimation : MonoBehaviour
 
     public void PlayBubblyLoop()
     {
-        // Kill old sequence if exists
         punchSeq?.Kill();
 
         punchSeq = DOTween.Sequence();
@@ -38,7 +37,7 @@ public class BubblyButtonAnimation : MonoBehaviour
                 vibrato,
                 elasticity
             ))
-            .AppendInterval(interval)      // <--- add break here
+            .AppendInterval(interval)     
             .SetLoops(-1, LoopType.Restart)
             .SetEase(Ease.OutQuad);
     }

@@ -17,7 +17,7 @@ public class GachaHistoryInfo : MonoBehaviour
     public bool showIndexNumbers = true;
     public int maxShownEntries = 100;
     public int fontSize = 32;
-    public int decimalPlaces = 0; // currently unused but kept for future extension
+    public int decimalPlaces = 0;
 
     [Header("Typing Effect")]
     public bool useTypingEffect = true;
@@ -34,7 +34,6 @@ public class GachaHistoryInfo : MonoBehaviour
 
     private void Awake()
     {
-        // Build colors as early as possible so Refresh() is always safe
         BuildColorLookup();
     }
 
@@ -83,7 +82,6 @@ public class GachaHistoryInfo : MonoBehaviour
             return;
         }
 
-        // Extra safety: if for some reason colors weren't built yet
         if (rarityHex == null)
             BuildColorLookup();
 
@@ -93,17 +91,16 @@ public class GachaHistoryInfo : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             var entry = historyData.pullHistory[i];
-            if (entry == null) continue; // safety
+            if (entry == null) continue; 
 
             string rarityName = FormatRarity(entry.rarity);
 
             if (!rarityHex.TryGetValue(entry.rarity, out string colorHex))
-                colorHex = "FFFFFF"; // fallback to white
+                colorHex = "FFFFFF";
 
             if (showIndexNumbers)
                 sb.Append($"{i + 1}. ");
 
-            // use the saved timestampString directly
             string dateString = string.IsNullOrEmpty(entry.timestampString)
                 ? "-"
                 : entry.timestampString;
