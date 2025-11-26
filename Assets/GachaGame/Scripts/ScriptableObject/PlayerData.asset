@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2b95e6d5303e14e9c6f1d02894b3b4, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  coin: 50000
+  coin: 900000
   diamond: 900000
   inventory: []

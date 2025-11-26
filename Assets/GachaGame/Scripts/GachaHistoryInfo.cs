@@ -49,6 +49,12 @@ public class GachaHistoryInfo : MonoBehaviour
     {
         PlayAnimation();
         Refresh();
+        GachaManager.Instance.ForceEnableSwipe(false);
+    }
+
+    private void OnDisable()
+    {
+        GachaManager.Instance.ForceEnableSwipe(true);
     }
 
     private void BuildColorLookup()

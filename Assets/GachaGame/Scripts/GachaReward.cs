@@ -221,7 +221,9 @@ public class GachaReward : MonoBehaviour
         if (rewardQueue.Count == 0) return;
 
         var curr = rewardQueue[0];
-        RandomizeCapsuleColors();
+
+        // choose capsule based on rarity (fallbacks to random)
+        SetCapsuleByRarity(curr.rarity);
 
         closeButton?.gameObject.SetActive(false);
         itemInfoObject?.SetActive(true);
@@ -438,6 +440,29 @@ public class GachaReward : MonoBehaviour
             results.Add(Roll(database));
 
         return results;
+    }
+
+    /// <summary>
+    /// Activates a capsule color GameObject that corresponds to the given rarity.
+    /// Mapping: Normal = index 0, Rare = 1, SuperRare = 2, UltraRare = 3
+    /// If the capsuleColors list doesn't contain an entry for that rarity, falls back to random.
+    /// </summary>
+    void SetCapsuleByRarity(GachaMachineDatabase.Rarity rarity)
+    {
+        // deactivate all first
+        foreach (var item in capsuleColors)
+            item?.SetActive(false);
+
+        int idx = (int)rarity; // expects ordering as described above
+
+        if (idx >= 0 && idx < capsuleColors.Count && capsuleColors[idx] != null)
+        {
+            capsuleColors[idx].SetActive(true);
+            return;
+        }
+
+        // fallback: random if exact mapping not found
+        RandomizeCapsuleColors();
     }
 
     void RandomizeCapsuleColors()

@@ -51,27 +51,44 @@ public class GachaManager : MonoBehaviour
 
     public void StartGacha()
     {
+        ForceEnableSwipe(false);
         ModalManager.Show(
             "Start Gacha",
             $"Are you sure you want to pick this gacha for <color=#FF2A00>{currGachaMachine.GetGachaPrice()}</color> tokens?",
             new[]
             {
-                new ModalButton() { Text = "NO"},
+        new ModalButton()
+            {
+                Text = "NO",
+                Callback = () =>
+                {
+                    ForceEnableSwipe(true);
+                }
+            },
                 new ModalButton() { Text = "YES", Callback = CheckTokenBalance}
-            });
+        });
     }
 
     // ---- 10 Pull Entry ----
     public void StartGacha10()
     {
-        ModalManager.Show(
+        ForceEnableSwipe(false);
+        ModalManager.Show
+        (
             "Start 10x Gacha",
             $"Are you sure you want to do 10 pulls on this gacha for <color=#FF2A00>{currGachaMachine.GetGachaPriceTen()}</color> tokens?",
-            new[]
-            {
-                new ModalButton() { Text = "NO"},
-                new ModalButton() { Text = "YES", Callback = CheckTokenBalance10}
-            });
+              new[]
+              {
+                    new ModalButton()
+                    {
+                        Text = "NO",
+                        Callback = () =>
+                    {
+                        ForceEnableSwipe(true);
+                    }
+              },
+                    new ModalButton() { Text = "YES", Callback = CheckTokenBalance10}
+        });
     }
 
     public void CheckTokenBalance()
@@ -91,12 +108,15 @@ public class GachaManager : MonoBehaviour
                 "Insufficient Coin",
                 "Your coin is insufficient please recharge your coin first before selecting this gacha.",
                 new[] { new ModalButton() { Text = "OK" } });
+
+            ForceEnableSwipe(true);
         }
     }
 
     // Updated: 10 Pull Price + Mode Switch
     private void CheckTokenBalance10()
     {
+        ForceEnableSwipe(false);
         var gachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
 
         // Uses GetGachaPriceTen() from your script
@@ -116,6 +136,8 @@ public class GachaManager : MonoBehaviour
                 "Insufficient Coin",
                 "Your coin is insufficient for 10 pulls. Please recharge your coin first.",
                 new[] { new ModalButton() { Text = "OK" } });
+
+            ForceEnableSwipe(true);
         }
     }
 
@@ -207,6 +229,7 @@ public class GachaManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         currGachaMachine.spinUI.SetActive(true);
         currGachaMachine.isAvaliable = true;
+        ForceEnableSwipe(false);
     }
 
     public void ShowMachineInfo(bool fadeIn)

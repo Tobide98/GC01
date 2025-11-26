@@ -24,8 +24,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 15648028743666531}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.263451, y: -0.30124444, z: -5.525456}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 5.263451, y: -0.3012445, z: -5.525456}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -34,8 +34,41 @@ Transform:
   - {fileID: 8951985065719355633}
   - {fileID: 1087588550111644649}
   - {fileID: 7817651662189841281}
-  m_Father: {fileID: 2969245044752506698}
+  m_Father: {fileID: 7212247934283721979}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &809278722508605209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7212247934283721979}
+  m_Layer: 0
+  m_Name: Capsule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7212247934283721979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809278722508605209}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1480656676505301299}
+  - {fileID: 3740600141142641710}
+  m_Father: {fileID: 2969245044752506698}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!1 &1544091704988838286
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,12 +112,12 @@ GameObject:
   - component: {fileID: 6797081664810808741}
   - component: {fileID: 2420014384076605367}
   m_Layer: 0
-  m_Name: hongyuan_niudan_Geo
+  m_Name: RedCap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5296957252624925604
 Transform:
   m_ObjectHideFlags: 0
@@ -162,7 +195,7 @@ GameObject:
   - component: {fileID: 1710179403645224557}
   - component: {fileID: 5586267938255599573}
   m_Layer: 0
-  m_Name: huangyuan_niudan_Geo
+  m_Name: OrangeCap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -245,7 +278,7 @@ GameObject:
   - component: {fileID: 6106696564199259786}
   - component: {fileID: 1492391176909617186}
   m_Layer: 0
-  m_Name: lvyuan_niudan_Geo
+  m_Name: GreenCap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,12 +361,12 @@ GameObject:
   - component: {fileID: 4700823108366177190}
   - component: {fileID: 388902080917284367}
   m_Layer: 0
-  m_Name: ziyuan_niudan_Geo
+  m_Name: RainbowCap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7817651662189841281
 Transform:
   m_ObjectHideFlags: 0
@@ -377,7 +410,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 257010f90803aee45b71451b4ff0dcdd, type: 2}
+  - {fileID: 2100000, guid: 3b819204f03b8b94c9ebb4d0cfc9f26f, type: 2}
+  - {fileID: 2100000, guid: e129110a97f557245ac7c6ac48c7028a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -411,7 +445,7 @@ GameObject:
   - component: {fileID: 7035624630563852829}
   - component: {fileID: 2274862483017672243}
   m_Layer: 0
-  m_Name: lanyuan_niudan_Geo
+  m_Name: BlueCap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -512,8 +546,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1480656676505301299}
-  - {fileID: 3740600141142641710}
+  - {fileID: 7212247934283721979}
   - {fileID: 62236791384128352}
   - {fileID: 5585914404121788882}
   - {fileID: 5795257392886521238}
@@ -567,12 +600,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8469424319165357503}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2969245044752506698}
+  m_Father: {fileID: 7212247934283721979}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4442372218974454225
 MeshFilter:

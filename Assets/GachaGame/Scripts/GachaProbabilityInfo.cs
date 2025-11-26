@@ -45,6 +45,12 @@ public class GachaProbabilityInfo : MonoBehaviour
     private void OnEnable()
     {
         PlayAnimation();
+        GachaManager.Instance.ForceEnableSwipe(false);
+    }
+
+    private void OnDisable()
+    {
+        GachaManager.Instance.ForceEnableSwipe(true);
     }
 
     public void SetDatabse(GachaMachineDatabase databaseSelected)
