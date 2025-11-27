@@ -16,7 +16,8 @@ MonoBehaviour:
   displayName: GachaMachine_3001
   machinePrice: 700
   machinePriceTen: 6800
-  bannerImage: {fileID: 21300000, guid: de9a6c815d13c70419c5e4c37825e1cc, type: 3}
+  bannerImage: {fileID: 21300000, guid: 344dd8a0ca4add74eac57e54f58c83d0, type: 3}
+  machineColor: {r: 0, g: 0.6115854, b: 1, a: 0.29803923}
   historyData: {fileID: 11400000, guid: 4b2d3a34da28e8b4daad49ab8b850b6a, type: 2}
   lootTable:
   - rewardPrefab: {fileID: 2795397902362475942, guid: 72c47fdc43d84b243bdc109c284341d6,

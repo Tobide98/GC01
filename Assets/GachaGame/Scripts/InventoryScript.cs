@@ -71,10 +71,14 @@ public class InventoryScript : MonoBehaviour
         });
     }
 
+    private void Start()
+    {
+        SetFilter(FilterCategory.All);
+    }
+
     private void OnEnable()
     {
         Refresh();
-        SetFilter(FilterCategory.All);
     }
 
     // --- Filter API ---

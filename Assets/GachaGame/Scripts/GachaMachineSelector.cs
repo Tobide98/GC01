@@ -14,6 +14,10 @@ public class GachaMachineSelector : MonoBehaviour
     public GameObject gachaDropRateUI;
     public GameObject gachaHistoryUI;
 
+    [Header("Home Background")]
+    public Image scrollingBg;
+    public Image staticBg;
+
     [Header("Banner Animation (optional)")]
     public CanvasGroup gachaBannerCanvasGroup;
     public float bannerMoveOffset = 30f;
@@ -281,6 +285,8 @@ public class GachaMachineSelector : MonoBehaviour
 
             // instantly place banner at opposite side so the fade-in movement goes towards center
             bannerRect.localPosition = inStartPos;
+
+            SetBackgroundColor(database.machineColor);
         });
 
         // fade in while moving from inStartPos -> normal
@@ -299,4 +305,22 @@ public class GachaMachineSelector : MonoBehaviour
     {
         if (gachaHistoryUI != null) gachaHistoryUI.SetActive(true);
     }
+
+    void SetBackgroundColor(Color targetColor)
+    {
+        if (scrollingBg != null)
+        {
+            scrollingBg.DOKill(); // stop previous tweens safely
+            scrollingBg.DOColor(targetColor, 0.4f)   // ← change duration as needed
+                        .SetEase(Ease.OutQuad);
+        }
+
+        if (staticBg != null)
+        {
+            staticBg.DOKill();
+            staticBg.DOColor(targetColor, 0.4f)
+                    .SetEase(Ease.OutQuad);
+        }
+    }
+
 }

@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Gacha Machine Database 4
   m_EditorClassIdentifier: 
   machineId: 4
-  displayName: GachaMachine_3001
+  displayName: GachaMachine_4001
   machinePrice: 800
   machinePriceTen: 7800
-  bannerImage: {fileID: 21300000, guid: 344dd8a0ca4add74eac57e54f58c83d0, type: 3}
+  bannerImage: {fileID: 21300000, guid: 89ca22370a0a682468076e64ee216235, type: 3}
+  machineColor: {r: 0.007283283, g: 0.754717, b: 0, a: 0.29803923}
   historyData: {fileID: 11400000, guid: 5a8614278971bc6459be61964113e286, type: 2}
   lootTable:
   - rewardPrefab: {fileID: 1342889782683910774, guid: 4aa01f1d5c72d4e47a8c44e612a6b6fc,
