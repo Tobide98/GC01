@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GachaMachineSelector : MonoBehaviour
 {
@@ -12,6 +13,12 @@ public class GachaMachineSelector : MonoBehaviour
     public TextMeshProUGUI PityLeftText;
     public GameObject gachaDropRateUI;
     public GameObject gachaHistoryUI;
+
+    [Header("Banner Animation (optional)")]
+    public CanvasGroup gachaBannerCanvasGroup;
+    public float bannerMoveOffset = 30f;
+    public float bannerFadeHalfDuration = 0.5f;
+    public float bannerMoveEaseDuration = 0.5f;
 
     [Header("Modules")]
     [SerializeField] private GachaProbabilityInfo gachaProbabilityInfo;
@@ -43,6 +50,11 @@ public class GachaMachineSelector : MonoBehaviour
 
     private Vector3 parentTargetPos;
 
+    // Banner internals
+    public RectTransform bannerRect;
+    private Vector3 bannerOriginalLocalPos;
+    private bool lastWasNext = true; // true = last move was Next, false = Prev
+
     void Start()
     {
         if (machinesParent == null)
@@ -62,15 +74,25 @@ public class GachaMachineSelector : MonoBehaviour
         if (prevButton != null)
             prevButton.onClick.AddListener(OnPrevButtonPressed);
 
-        if (dropRateInfoButton != null) 
+        if (dropRateInfoButton != null)
             dropRateInfoButton.onClick.AddListener(ShowDropRateInfo);
 
         if (historyInfoButton != null)
             historyInfoButton.onClick.AddListener(ShowHistoryInfo);
 
+        // Try auto-find CanvasGroup if not assigned
+        if (gachaBannerCanvasGroup == null && bannerImage != null)
+            gachaBannerCanvasGroup = bannerImage.GetComponent<CanvasGroup>();
+
+        // Cache rect transform & original pos (safe)
+        if (bannerRect == null && bannerImage != null)
+            bannerRect = bannerImage.rectTransform;
+
+        bannerOriginalLocalPos = bannerRect != null ? bannerRect.localPosition : Vector3.zero;
+
         parentTargetPos = machinesParent.position;
         RecalculateParentTarget(true);
-        UpdateMachineInfo();
+        UpdateMachineInfoInstant(); // show initial machine info immediately
     }
 
     void Update()
@@ -124,7 +146,8 @@ public class GachaMachineSelector : MonoBehaviour
     {
         currentIndex = (currentIndex + 1) % machines.Count;
         RecalculateParentTarget(false);
-        UpdateMachineInfo();
+        lastWasNext = true;
+        UpdateMachineInfoWithBanner();
     }
 
     void SelectPrevious()
@@ -134,7 +157,8 @@ public class GachaMachineSelector : MonoBehaviour
             currentIndex = machines.Count - 1;
 
         RecalculateParentTarget(false);
-        UpdateMachineInfo();
+        lastWasNext = false;
+        UpdateMachineInfoWithBanner();
     }
 
     void RecalculateParentTarget(bool instant)
@@ -156,16 +180,16 @@ public class GachaMachineSelector : MonoBehaviour
     public void EnableSwipe()
     {
         swipeEnabled = true;
-        prevButton.gameObject.SetActive(swipeEnabled);
-        nextButton.gameObject.SetActive(swipeEnabled);
+        if (prevButton != null) prevButton.gameObject.SetActive(swipeEnabled);
+        if (nextButton != null) nextButton.gameObject.SetActive(swipeEnabled);
     }
 
     public void DisableSwipe()
     {
         swipeEnabled = false;
         swiping = false;
-        prevButton.gameObject.SetActive(swipeEnabled);
-        nextButton.gameObject.SetActive(swipeEnabled);
+        if (prevButton != null) prevButton.gameObject.SetActive(swipeEnabled);
+        if (nextButton != null) nextButton.gameObject.SetActive(swipeEnabled);
     }
 
     // GET CURRENT SELECTED MACHINE
@@ -179,27 +203,100 @@ public class GachaMachineSelector : MonoBehaviour
         return currentIndex;
     }
 
-    public void UpdateMachineInfo()
+    // -----------------------
+    // MACHINE INFO UPDATES
+    // -----------------------
+    public void UpdateMachineInfoInstant()
     {
         var machine = GetCurrentSelectedMachine();
-        var database = machine.GetMachineDatabase();
-        priceTagText.text = $"{machine.GetGachaPrice():N0}";
-        priceTagTenText.text = $"{machine.GetGachaPriceTen():N0}";
-        bannerImage.sprite = database.bannerImage;
-        int pityLeft = machine.GetURPityLeft();
-        PityLeftText.text = $"<color=#FFA500>{pityLeft}</color> pulls left until";
-        gachaProbabilityInfo.SetDatabse(database);
-        gachaHistoryInfo.SetDatabse(database);
+        if (machine == null) return;
 
+        var database = machine.GetMachineDatabase();
+        if (priceTagText != null) priceTagText.text = $"{machine.GetGachaPrice():N0}";
+        if (priceTagTenText != null) priceTagTenText.text = $"{machine.GetGachaPriceTen():N0}";
+        if (bannerImage != null && database != null) bannerImage.sprite = database.bannerImage;
+
+        int pityLeft = machine.GetURPityLeft();
+        if (PityLeftText != null) PityLeftText.text = $"<color=#FFA500>{pityLeft}</color> pulls left until";
+
+        if (gachaProbabilityInfo != null && database != null) gachaProbabilityInfo.SetDatabse(database);
+        if (gachaHistoryInfo != null && database != null) gachaHistoryInfo.SetDatabse(database);
+    }
+
+    /// <summary>
+    /// Update machine info but animate the banner fading out/in while sliding left/right depending on direction.
+    /// Sequence (NEXT):
+    ///  - fadeOut + move normal -> LEFT
+    ///  - callback: update sprite/text & instantly put banner at RIGHT
+    ///  - fadeIn  + move RIGHT -> normal
+    /// Sequence (PREV) is mirrored (RIGHT then LEFT -> normal)
+    /// </summary>
+    public void UpdateMachineInfoWithBanner()
+    {
+        // Fallback to instant if no banner components
+        if (gachaBannerCanvasGroup == null || bannerRect == null)
+        {
+            UpdateMachineInfoInstant();
+            return;
+        }
+
+        // Kill any overlapping tweens
+        gachaBannerCanvasGroup.DOKill();
+        bannerRect.DOKill();
+
+        float half = Mathf.Max(0.01f, bannerFadeHalfDuration);
+        float moveDur = Mathf.Max(0.01f, bannerMoveEaseDuration);
+        float offset = Mathf.Abs(bannerMoveOffset);
+
+        // For NEXT: outOffset = -offset (left), inOffset = +offset (right)
+        // For PREV: outOffset = +offset (right), inOffset = -offset (left)
+        float outOffset = lastWasNext ? -offset : offset;
+        float inOffset = -outOffset;
+
+        Vector3 outPos = bannerOriginalLocalPos + new Vector3(outOffset, 0f, 0f);
+        Vector3 inStartPos = bannerOriginalLocalPos + new Vector3(inOffset, 0f, 0f);
+
+        Sequence seq = DOTween.Sequence();
+
+        // fade out while moving from normal -> outPos
+        seq.Append(gachaBannerCanvasGroup.DOFade(0f, half).SetEase(Ease.InOutQuad));
+        seq.Join(bannerRect.DOLocalMove(outPos, moveDur).SetEase(Ease.InOutQuad));
+
+        // after faded out and moved, update content and snap to opposite side (inStartPos)
+        seq.AppendCallback(() =>
+        {
+            var machine = GetCurrentSelectedMachine();
+            if (machine == null) return;
+
+            var database = machine.GetMachineDatabase();
+            if (priceTagText != null) priceTagText.text = $"{machine.GetGachaPrice():N0}";
+            if (priceTagTenText != null) priceTagTenText.text = $"{machine.GetGachaPriceTen():N0}";
+            if (bannerImage != null && database != null) bannerImage.sprite = database.bannerImage;
+
+            int pityLeft = machine.GetURPityLeft();
+            if (PityLeftText != null) PityLeftText.text = $"<color=#FFA500>{pityLeft}</color> pulls left until";
+
+            if (gachaProbabilityInfo != null && database != null) gachaProbabilityInfo.SetDatabse(database);
+            if (gachaHistoryInfo != null && database != null) gachaHistoryInfo.SetDatabse(database);
+
+            // instantly place banner at opposite side so the fade-in movement goes towards center
+            bannerRect.localPosition = inStartPos;
+        });
+
+        // fade in while moving from inStartPos -> normal
+        seq.Append(gachaBannerCanvasGroup.DOFade(1f, half).SetEase(Ease.InOutQuad));
+        seq.Join(bannerRect.DOLocalMove(bannerOriginalLocalPos, moveDur).SetEase(Ease.InOutQuad));
+
+        seq.Play();
     }
 
     void ShowDropRateInfo()
     {
-        gachaDropRateUI.SetActive(true);
+        if (gachaDropRateUI != null) gachaDropRateUI.SetActive(true);
     }
 
     void ShowHistoryInfo()
     {
-        gachaHistoryUI.SetActive(true);
+        if (gachaHistoryUI != null) gachaHistoryUI.SetActive(true);
     }
 }

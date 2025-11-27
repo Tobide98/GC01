@@ -12,19 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08cb2d3278d1c374687ea38cc64ebcb4, type: 3}
   m_Name: StoreDatabase
   m_EditorClassIdentifier: 
-  storeItems:
+  coinStoreItems:
   - icon: {fileID: 21300000, guid: e7d326d26cc29b946b0a2d717c4e5da4, type: 3}
     title: Token Pile
-    description: This token pile will give you 1000 Token(s)
-    tokenValue: 1000
+    description: This contains 1000 tokens
+    value: 1000
     price: 200
   - icon: {fileID: 21300000, guid: 2b2347a9440b1534d8f3cf96ea527399, type: 3}
     title: Token Pouch
-    description: This token pile will give you 5000 Token(s)
-    tokenValue: 5000
+    description: This contains 5000 tokens
+    value: 5000
     price: 800
   - icon: {fileID: 21300000, guid: f53698597cea7304d8b12d76d2bfe1ec, type: 3}
     title: Token Chest
-    description: This token pile will give you 10.000 Token(s)
-    tokenValue: 10000
-    price: 1800
+    description: This contains 10.000 tokens
+    value: 10000
+    price: 1500
+  diamondStoreItems:
+  - icon: {fileID: 21300000, guid: 0caff37bbd50fe94497dfacaee09f061, type: 3}
+    title: Diamond Pile
+    description: This contains 1000 diamonds
+    value: 1000
+    price: 20
+  - icon: {fileID: 21300000, guid: 0caff37bbd50fe94497dfacaee09f061, type: 3}
+    title: Diamond Pouch
+    description: This contains 5000 diamonds
+    value: 5000
+    price: 80
+  - icon: {fileID: 21300000, guid: 0caff37bbd50fe94497dfacaee09f061, type: 3}
+    title: Diamond Chest
+    description: This contains 10.000 diamonds
+    value: 10000
+    price: 150

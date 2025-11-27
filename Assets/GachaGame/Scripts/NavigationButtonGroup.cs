@@ -24,7 +24,6 @@ public class NavigationButtonGroup : MonoBehaviour
 
     void Start()
     {
-        // build rect list and listeners first
         rects.Clear();
         originalLocalPos.Clear();
 
@@ -36,23 +35,16 @@ public class NavigationButtonGroup : MonoBehaviour
             RectTransform rt = btn.transform as RectTransform;
             rects.Add(rt);
 
-            // safe listener registration
             int idx = i;
             btn.onClick.AddListener(() => SelectIndex(idx));
         }
 
-        // cache the CURRENT positions (important if layout or other logic ran before Start)
         CacheCurrentPositions();
 
-        // optional: select first by snapping instantly (comment out if undesired)
         if (rects.Count > 0)
             SelectIndex(1, true);
     }
 
-    /// <summary>
-    /// Cache the current localPosition of each RectTransform into originalLocalPos.
-    /// Call this if the UI layout changes at runtime and you want to re-base the 'original' positions.
-    /// </summary>
     public void CacheCurrentPositions()
     {
         originalLocalPos.Clear();
@@ -61,21 +53,15 @@ public class NavigationButtonGroup : MonoBehaviour
         {
             RectTransform rt = rects[i];
             if (rt == null) continue;
-
-            // store the actual current localPosition as the "original" baseline
             originalLocalPos[rt] = rt.localPosition;
         }
     }
 
-    /// <summary>
-    /// Public wrapper so other scripts can request a re-cache.
-    /// </summary>
     public void RecachePositions()
     {
         CacheCurrentPositions();
     }
 
-    /// <summary> Select index. If instant==true it snaps instead of tweening. </summary>
     public void SelectIndex(int index, bool instant = false)
     {
         if (index < 0 || index >= rects.Count) return;
@@ -83,19 +69,23 @@ public class NavigationButtonGroup : MonoBehaviour
         // if already selected, do nothing
         if (selectedIndex == index) return;
 
-        // reset all buttons back to their own original local Y using cached positions
+        // --- ENABLE/DISABLE BUTTONS ---
+        for (int i = 0; i < buttons.Count; i++)
+        {
+            if (buttons[i] != null)
+            {
+                // Enable all, disable selected
+                buttons[i].interactable = (i != index);
+            }
+        }
+
+        // --- Reset all positions ---
         for (int i = 0; i < rects.Count; i++)
         {
-            RectTransform rt = rects[i];
+            var rt = rects[i];
             if (rt == null) continue;
 
-            // kill any running tweens on this transform
             rt.DOKill();
-
-            // ensure we have an entry (safety)
-            if (!originalLocalPos.ContainsKey(rt))
-                originalLocalPos[rt] = rt.localPosition;
-
             Vector3 orig = originalLocalPos[rt];
             Vector3 target = new Vector3(rt.localPosition.x, orig.y, rt.localPosition.z);
 
@@ -105,15 +95,11 @@ public class NavigationButtonGroup : MonoBehaviour
                 rt.DOLocalMove(target, duration).SetEase(ease);
         }
 
-        // lift the selected one (only modify Y)
+        // --- Lift selected ---
         RectTransform selected = rects[index];
         if (selected != null)
         {
             selected.DOKill();
-
-            // ensure we have an entry for the selected as well
-            if (!originalLocalPos.ContainsKey(selected))
-                originalLocalPos[selected] = selected.localPosition;
 
             Vector3 orig = originalLocalPos[selected];
             Vector3 lifted = new Vector3(selected.localPosition.x, orig.y + liftAmount, selected.localPosition.z);
@@ -128,7 +114,6 @@ public class NavigationButtonGroup : MonoBehaviour
         OnSelectedIndexChanged?.Invoke(selectedIndex);
     }
 
-    /// <summary>Public wrappers</summary>
     public void SelectNext(bool instant = false)
     {
         if (rects.Count == 0) return;
@@ -144,21 +129,22 @@ public class NavigationButtonGroup : MonoBehaviour
         SelectIndex(prev, instant);
     }
 
-    /// <summary>Reset everything instantly</summary>
     public void ResetAllInstant()
     {
         for (int i = 0; i < rects.Count; i++)
         {
             RectTransform rt = rects[i];
             if (rt == null) continue;
-            rt.DOKill();
 
-            // if cached, restore cached local pos; otherwise use current
-            if (originalLocalPos.ContainsKey(rt))
-                rt.localPosition = originalLocalPos[rt];
-            else
-                rt.localPosition = rt.localPosition;
+            rt.DOKill();
+            rt.localPosition = originalLocalPos.ContainsKey(rt)
+                ? originalLocalPos[rt]
+                : rt.localPosition;
+
+            if (buttons[i] != null)
+                buttons[i].interactable = true;
         }
+
         selectedIndex = -1;
     }
 }

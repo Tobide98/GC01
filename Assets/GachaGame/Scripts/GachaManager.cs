@@ -43,57 +43,93 @@ public class GachaManager : MonoBehaviour
     private void Start()
     {
         mainMenu.gameObject.SetActive(true);
-        startButton.onClick.AddListener(StartGacha);
-        startTenButton.onClick.AddListener(StartGacha10);
-        gachaRewardScript.OnRewardClosed += HandleRewardClosed;
-        currGachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+
+        if (startButton != null)
+            startButton.onClick.AddListener(StartGacha);
+
+        if (startTenButton != null)
+            startTenButton.onClick.AddListener(StartGacha10);
+
+        if (gachaRewardScript != null)
+            gachaRewardScript.OnRewardClosed += HandleRewardClosed;
+
+        // safe-get current machine
+        if (gachaMachineSelector != null)
+            currGachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
     }
 
     public void StartGacha()
     {
         ForceEnableSwipe(false);
+
+        // ensure we have a current machine reference (refresh if needed)
+        if (gachaMachineSelector != null)
+            currGachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+
+        int price = currGachaMachine != null ? currGachaMachine.GetGachaPrice() : 0;
+
         ModalManager.Show(
             "Start Gacha",
-            $"Are you sure you want to pick this gacha for <color=#FF2A00>{currGachaMachine.GetGachaPrice()}</color> tokens?",
+            $"Are you sure you want to pick this gacha for <color=#FF2A00>{price}</color> tokens?",
             new[]
             {
-        new ModalButton()
-            {
-                Text = "NO",
-                Callback = () =>
+                new ModalButton()
                 {
-                    ForceEnableSwipe(true);
-                }
-            },
-                new ModalButton() { Text = "YES", Callback = CheckTokenBalance}
-        });
+                    Text = "NO",
+                    Callback = () =>
+                    {
+                        ForceEnableSwipe(true);
+                    }
+                },
+                new ModalButton() { Text = "YES", Callback = CheckTokenBalance }
+            });
     }
 
     // ---- 10 Pull Entry ----
     public void StartGacha10()
     {
         ForceEnableSwipe(false);
+
+        if (gachaMachineSelector != null)
+            currGachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+
+        int totalPrice = currGachaMachine != null ? currGachaMachine.GetGachaPriceTen() : 0;
+
         ModalManager.Show
         (
             "Start 10x Gacha",
-            $"Are you sure you want to do 10 pulls on this gacha for <color=#FF2A00>{currGachaMachine.GetGachaPriceTen()}</color> tokens?",
-              new[]
-              {
-                    new ModalButton()
-                    {
-                        Text = "NO",
-                        Callback = () =>
+            $"Are you sure you want to do 10 pulls on this gacha for <color=#FF2A00>{totalPrice}</color> tokens?",
+            new[]
+            {
+                new ModalButton()
+                {
+                    Text = "NO",
+                    Callback = () =>
                     {
                         ForceEnableSwipe(true);
                     }
-              },
-                    new ModalButton() { Text = "YES", Callback = CheckTokenBalance10}
-        });
+                },
+                new ModalButton() { Text = "YES", Callback = CheckTokenBalance10 }
+            });
     }
 
     public void CheckTokenBalance()
     {
+        if (gachaMachineSelector == null)
+        {
+            Debug.LogError("[GachaManager] gachaMachineSelector is not assigned.");
+            ForceEnableSwipe(true);
+            return;
+        }
+
         var gachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+        if (gachaMachine == null)
+        {
+            Debug.LogError("[GachaManager] No current gacha machine found.");
+            ForceEnableSwipe(true);
+            return;
+        }
+
         if (playerScirpt.CheckIsSufficientCoin(gachaMachine.GetGachaPrice()))
         {
             currGachaMachine = gachaMachine;
@@ -116,10 +152,21 @@ public class GachaManager : MonoBehaviour
     // Updated: 10 Pull Price + Mode Switch
     private void CheckTokenBalance10()
     {
-        ForceEnableSwipe(false);
-        var gachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+        if (gachaMachineSelector == null)
+        {
+            Debug.LogError("[GachaManager] gachaMachineSelector is not assigned.");
+            ForceEnableSwipe(true);
+            return;
+        }
 
-        // Uses GetGachaPriceTen() from your script
+        var gachaMachine = gachaMachineSelector.GetCurrentSelectedMachine();
+        if (gachaMachine == null)
+        {
+            Debug.LogError("[GachaManager] No current gacha machine found.");
+            ForceEnableSwipe(true);
+            return;
+        }
+
         int totalPrice = gachaMachine.GetGachaPriceTen();
 
         if (playerScirpt.CheckIsSufficientCoin(totalPrice))
@@ -161,14 +208,19 @@ public class GachaManager : MonoBehaviour
             isTenPull = false; // reset mode
         }
 
-        currGachaMachine.isAvaliable = false;
+        if (currGachaMachine != null)
+            currGachaMachine.isAvaliable = false;
     }
 
     public void SelectGacha(GachaController gachaMachine)
     {
         StartMachineCouroutine();
-        gachaMachineSelector.DisableSwipe();
-        gachaMachineSelector.UpdateMachineInfo();
+        if (gachaMachineSelector != null) gachaMachineSelector.DisableSwipe();
+
+     
+        else
+            Debug.LogWarning("[GachaManager] gachaMachineSelector is null when selecting gacha.");
+
         ShowMachineInfo(false);
     }
 
@@ -185,10 +237,15 @@ public class GachaManager : MonoBehaviour
 
     public void OnFinishGacha()
     {
-        gachaMachineSelector.EnableSwipe();
-        gachaMachineSelector.UpdateMachineInfo();
+        if (gachaMachineSelector != null) gachaMachineSelector.EnableSwipe();
+
+
+        gachaMachineSelector.UpdateMachineInfoInstant();
         ResetMachine();
-        currGachaMachine.OnMaxTurnsReached.RemoveListener(OnMaxTurns);
+
+        if (currGachaMachine != null)
+            currGachaMachine.OnMaxTurnsReached.RemoveListener(OnMaxTurns);
+
     }
 
     public void ResetMachine()
@@ -225,10 +282,17 @@ public class GachaManager : MonoBehaviour
 
     IEnumerator StartMachine()
     {
-        currGachaMachine.GetMachineAnim().SetTrigger("Start");
+        if (currGachaMachine != null)
+            currGachaMachine.GetMachineAnim().SetTrigger("Start");
+
         yield return new WaitForSeconds(1.5f);
-        currGachaMachine.spinUI.SetActive(true);
-        currGachaMachine.isAvaliable = true;
+
+        if (currGachaMachine != null)
+        {
+            currGachaMachine.spinUI.SetActive(true);
+            currGachaMachine.isAvaliable = true;
+        }
+
         ForceEnableSwipe(false);
     }
 
@@ -267,6 +331,8 @@ public class GachaManager : MonoBehaviour
 
     public void ForceEnableSwipe(bool enable)
     {
+        if (gachaMachineSelector == null) return;
+
         if (enable)
         {
             gachaMachineSelector.EnableSwipe();

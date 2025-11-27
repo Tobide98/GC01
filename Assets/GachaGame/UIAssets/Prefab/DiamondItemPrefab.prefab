@@ -322,7 +322,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0caff37bbd50fe94497dfacaee09f061, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de01c981d02c3d14b97620b9ebf35b2d, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -759,7 +759,7 @@ GameObject:
   - component: {fileID: 2072971323239064825}
   - component: {fileID: 3366848286203526419}
   m_Layer: 5
-  m_Name: StoreItemPrefab
+  m_Name: DiamondItemPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -774,7 +774,7 @@ RectTransform:
   m_GameObject: {fileID: 6013343613284989248}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.83206, y: 0.83206, z: 0.83206}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5126415258728726581}

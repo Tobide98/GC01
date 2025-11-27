@@ -75,6 +75,6 @@ MonoBehaviour:
     highestTrigger: 50
     guaranteedMinimum: 0
   superRarePity: 10
-  ultraRarePity: 80
+  ultraRarePity: 50
   currentSuperRareRolls: 0
   currentUltraRareRolls: 0

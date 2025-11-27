@@ -60,7 +60,7 @@ public class StoreItemScript : MonoBehaviour
             data.title,
             data.icon,
             data.description,
-            data.tokenValue,
+            data.value,
             data.price,
             onBuyCallback
         );

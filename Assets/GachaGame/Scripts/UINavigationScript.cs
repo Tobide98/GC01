@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -106,6 +107,7 @@ public class UINavigationScript : MonoBehaviour
         }
 
         menuObj.SetActive(true);
+        PlayAnimation(menuObj);
 
         // keep enum in sync when possible
         if (System.Enum.TryParse(typeof(Menu), menuName, true, out var parsed))
@@ -158,5 +160,20 @@ public class UINavigationScript : MonoBehaviour
         OpenMenu(Menu.Store);
         navButtonGroup.SelectIndex(0);
         storeButton.Select();
+    }
+
+    void PlayAnimation(GameObject mennuObject)
+    {
+        var canvasGroup = mennuObject.GetComponent<CanvasGroup>();
+        canvasGroup.DOKill();
+        mennuObject.transform.DOKill();
+
+        canvasGroup.alpha = 0f;
+        mennuObject.transform.localScale = Vector3.one * 0.7f;
+
+        canvasGroup.DOFade(1f, 0.3f);
+        mennuObject.transform
+                .DOScale(1f, 0.3f)
+                .SetEase(Ease.OutBack, 1.2f);
     }
 }
