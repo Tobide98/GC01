@@ -57,7 +57,7 @@ public class GachaMachineSelector : MonoBehaviour
     // Banner internals
     public RectTransform bannerRect;
     private Vector3 bannerOriginalLocalPos;
-    private bool lastWasNext = true; // true = last move was Next, false = Prev
+    private bool lastWasNext = true; // true = last move was Next (banner moves left), false = Prev (banner moves right)
 
     void Start()
     {
@@ -148,26 +148,47 @@ public class GachaMachineSelector : MonoBehaviour
 
     void SelectNext()
     {
+        if (machines == null || machines.Count == 0) return;
+
+        int prevIndex = currentIndex;
         currentIndex = (currentIndex + 1) % machines.Count;
         RecalculateParentTarget(false);
-        lastWasNext = true;
+
+        // If we wrapped from last -> first, play animation as PREV (flip direction)
+        if (prevIndex == machines.Count - 1 && currentIndex == 0)
+            lastWasNext = false; // act like previous
+        else
+            lastWasNext = true;  // normal next
+
         UpdateMachineInfoWithBanner();
     }
 
     void SelectPrevious()
     {
+        if (machines == null || machines.Count == 0) return;
+
+        int prevIndex = currentIndex;
         currentIndex--;
         if (currentIndex < 0)
             currentIndex = machines.Count - 1;
 
         RecalculateParentTarget(false);
-        lastWasNext = false;
+
+        // If we wrapped from first -> last, play animation as NEXT (flip direction)
+        if (prevIndex == 0 && currentIndex == machines.Count - 1)
+            lastWasNext = true; // act like next
+        else
+            lastWasNext = false; // normal previous
+
         UpdateMachineInfoWithBanner();
     }
 
     void RecalculateParentTarget(bool instant)
     {
+        if (machines == null || machines.Count == 0) return;
+
         Transform selected = machines[currentIndex];
+        if (selected == null) return;
 
         Vector3 desiredPos =
             focusPoint.position + forwardDirection.normalized * forwardOffset;
@@ -199,7 +220,9 @@ public class GachaMachineSelector : MonoBehaviour
     // GET CURRENT SELECTED MACHINE
     public GachaController GetCurrentSelectedMachine()
     {
-        return machines[currentIndex].gameObject.GetComponent<GachaController>();
+        if (machines == null || machines.Count == 0) return null;
+        var go = machines[currentIndex]?.gameObject;
+        return go != null ? go.GetComponent<GachaController>() : null;
     }
 
     public int GetCurrentIndex()
@@ -225,6 +248,10 @@ public class GachaMachineSelector : MonoBehaviour
 
         if (gachaProbabilityInfo != null && database != null) gachaProbabilityInfo.SetDatabse(database);
         if (gachaHistoryInfo != null && database != null) gachaHistoryInfo.SetDatabse(database);
+
+        // also update background color instantly if available
+        if (database != null)
+            SetBackgroundColor(database.machineColor);
     }
 
     /// <summary>
@@ -286,7 +313,8 @@ public class GachaMachineSelector : MonoBehaviour
             // instantly place banner at opposite side so the fade-in movement goes towards center
             bannerRect.localPosition = inStartPos;
 
-            SetBackgroundColor(database.machineColor);
+            if (database != null)
+                SetBackgroundColor(database.machineColor);
         });
 
         // fade in while moving from inStartPos -> normal
@@ -322,5 +350,4 @@ public class GachaMachineSelector : MonoBehaviour
                     .SetEase(Ease.OutQuad);
         }
     }
-
 }
