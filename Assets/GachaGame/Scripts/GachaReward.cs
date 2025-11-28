@@ -65,6 +65,11 @@ public class GachaReward : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        Application.targetFrameRate = 120;
+    }
+
     private void Start()
     {
         BuildColorLookup();
