@@ -16,6 +16,3 @@ MonoBehaviour:
   - identifier: Default
     prefab: {fileID: 5513016382538558187, guid: 6c18aa9b053414f8c9d8f507cdc60faf,
       type: 3}
-  - identifier: AddCoin
-    prefab: {fileID: 5513016382538558187, guid: 6c18aa9b053414f8c9d8f507cdc60faf,
-      type: 3}
