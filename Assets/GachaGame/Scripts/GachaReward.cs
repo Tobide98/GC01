@@ -33,7 +33,7 @@ public class GachaReward : MonoBehaviour
     [Header("Reward UI Info")]
     [SerializeField] private Button openButton;
     [SerializeField] private Button closeButton;
-    [SerializeField] private Button skipButton;      // NEW: skip button
+    [SerializeField] private Button skipButton;      // skip button
     [SerializeField] private TextMeshProUGUI itemInfo;
     [SerializeField] private GameObject itemInfoObject;
     [SerializeField] private List<GameObject> rarityUI;
@@ -257,7 +257,6 @@ public class GachaReward : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         openButton?.gameObject.SetActive(true);
-        skipButton?.gameObject.SetActive(true);
     }
 
     void OnOpenGacha()
@@ -322,7 +321,7 @@ public class GachaReward : MonoBehaviour
         BuildResultSummary();
     }
 
-    // ---- SKIP BUTTON ----
+    // ---- SKIP BUTTON: show ALL Ultra Rares sequentially, then result screen ----
     public void SkipAll()
     {
         // Already on result screen? Do nothing (user can just close)
@@ -343,7 +342,32 @@ public class GachaReward : MonoBehaviour
             currRewardPrefab = null;
         }
 
-        // Stop showing individual items
+        // Find all UltraRare items in sessionRewards (preserve order)
+        List<RewardResult> urList = new List<RewardResult>();
+        foreach (var r in sessionRewards)
+        {
+            if (r.rarity == GachaMachineDatabase.Rarity.UltraRare)
+                urList.Add(r);
+        }
+
+        if (urList.Count > 0)
+        {
+            // Show all URs sequentially (rewardQueue will contain only URs)
+            rewardQueue.Clear();
+            rewardQueue.AddRange(urList);
+            showingMultiple = rewardQueue.Count > 1;
+            showingResult = false;
+
+            // hide per-item UI and show first UR now
+            openButton?.gameObject.SetActive(false);
+            rewardUIInfo?.SetActive(false);
+
+            ShowReward();
+            skipButton.gameObject.SetActive(false);
+            return;
+        }
+
+        // No UltraRare found → go straight to result summary
         rewardQueue.Clear();
         showingMultiple = false;
 
