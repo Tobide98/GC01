@@ -23,6 +23,7 @@ public class GachaMachineDatabase : ScriptableObject
         public GameObject rewardPrefab;
         public int rewardItemId;
         public string rewardName;
+        public Sprite icon;
 
         [Min(1)] public int baseQuantity = 1;
         [Min(0)] public int weight = 1;

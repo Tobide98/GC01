@@ -54,14 +54,16 @@ public class GachaReward : MonoBehaviour
         public int quantity;
         public GameObject prefab;
         public GachaMachineDatabase.Rarity rarity;
+        public Sprite itemIcon;
 
-        public RewardResult(int itemId, string itemName, int quantity, GameObject prefab, GachaMachineDatabase.Rarity rarity)
+        public RewardResult(int itemId, string itemName, int quantity, GameObject prefab, GachaMachineDatabase.Rarity rarity, Sprite itemIcon)
         {
             this.itemId = itemId;
             this.itemName = itemName;
             this.quantity = quantity;
             this.prefab = prefab;
             this.rarity = rarity;
+            this.itemIcon = itemIcon;   
         }
     }
 
@@ -191,7 +193,7 @@ public class GachaReward : MonoBehaviour
         if (urPityEnabled)
             database.currentUltraRareRolls = gotUR ? 0 : nextUrCount;
 
-        var result = new RewardResult(chosen.rewardItemId, chosen.rewardName, finalQty, chosen.rewardPrefab, chosen.rarity);
+        var result = new RewardResult(chosen.rewardItemId, chosen.rewardName, finalQty, chosen.rewardPrefab, chosen.rarity, chosen.icon);
         database.historyData.AddPull(result.itemName, result.rarity, result.quantity);
         GachaManager.Instance.GetPlayerData().AddInventory(result);
 

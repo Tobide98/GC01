@@ -8,12 +8,18 @@ public class InventoryItemUI : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI quantityText;
     public Image iconImage;
+    public Image basePanel;
 
     [Header("Rarity Objects")]
     public GameObject normalRarityObject;
     public GameObject rareRarityObject;
     public GameObject superRareRarityObject;
     public GameObject ultraRareRarityObject;
+
+    public Color normalColor;
+    public Color rareColor;
+    public Color superRareColor;
+    public Color ultraRareColor;
 
     public void Setup(PlayerData.InventoryEntry entry)
     {
@@ -41,15 +47,19 @@ public class InventoryItemUI : MonoBehaviour
         {
             case GachaMachineDatabase.Rarity.Normal:
                 if (normalRarityObject != null) normalRarityObject.SetActive(true);
+                basePanel.color = normalColor;
                 break;
             case GachaMachineDatabase.Rarity.Rare:
                 if (rareRarityObject != null) rareRarityObject.SetActive(true);
+                basePanel.color = rareColor;
                 break;
             case GachaMachineDatabase.Rarity.SuperRare:
                 if (superRareRarityObject != null) superRareRarityObject.SetActive(true);
+                basePanel.color = superRareColor;
                 break;
             case GachaMachineDatabase.Rarity.UltraRare:
                 if (ultraRareRarityObject != null) ultraRareRarityObject.SetActive(true);
+                basePanel.color = ultraRareColor;
                 break;
         }
     }

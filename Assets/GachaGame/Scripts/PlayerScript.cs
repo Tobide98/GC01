@@ -105,7 +105,8 @@ public class PlayerScript : MonoBehaviour
                 result.itemName,
                 result.rarity,
                 result.prefab,
-                result.quantity
+                result.quantity,
+                result.itemIcon
             );
         Debug.Log($"Added to inventory {result.itemName}");
     }

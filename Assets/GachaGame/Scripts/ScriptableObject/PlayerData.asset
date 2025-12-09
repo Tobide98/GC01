@@ -14,11 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coin: 90000
   diamond: 90000
-  inventory:
-  - itemId: 1004
-    itemName: Normal Slime
-    rarity: 2
-    prefab: {fileID: 6705402075998324148, guid: d941199d4a58fcb45adc75ea8e37c42c,
-      type: 3}
-    quantity: 15
-    icon: {fileID: 0}
+  inventory: []

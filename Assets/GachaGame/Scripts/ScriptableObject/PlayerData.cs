@@ -53,7 +53,7 @@ public class PlayerData : ScriptableObject
     /// If same itemId already exists, only increase quantity.
     /// </summary>
     public void AddItem(int itemId, string itemName, GachaMachineDatabase.Rarity rarity,
-                        GameObject prefab, int quantityToAdd)
+                        GameObject prefab, int quantityToAdd, Sprite itemIcon)
     {
         if (quantityToAdd <= 0) return;
 
@@ -72,7 +72,8 @@ public class PlayerData : ScriptableObject
                 itemName = itemName,
                 rarity = rarity,
                 prefab = prefab,
-                quantity = quantityToAdd
+                quantity = quantityToAdd,
+                icon = itemIcon
             };
             inventory.Add(newEntry);
         }
@@ -84,7 +85,7 @@ public class PlayerData : ScriptableObject
     public void AddItemFromLoot(GachaMachineDatabase.LootEntry loot, int quantityToAdd)
     {
         if (loot == null) return;
-        AddItem(loot.rewardItemId, loot.rewardName, loot.rarity, loot.rewardPrefab, quantityToAdd);
+        AddItem(loot.rewardItemId, loot.rewardName, loot.rarity, loot.rewardPrefab, quantityToAdd, loot.icon);
     }
 
     /// <summary>

@@ -24,6 +24,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 1001
     rewardName: Star 1
+    icon: {fileID: 1606255019, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 100
     rarity: 0
@@ -35,6 +36,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 1002
     rewardName: Star 2
+    icon: {fileID: -1493217706, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 100
     rarity: 0
@@ -46,6 +48,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 1003
     rewardName: Star 3
+    icon: {fileID: 464376132, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 100
     rarity: 0
@@ -57,6 +60,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 1004
     rewardName: Normal Slime
+    icon: {fileID: -2010557815, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 50
     rarity: 2
@@ -68,6 +72,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 1005
     rewardName: Slime King
+    icon: {fileID: 1858534209, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 5
     rarity: 3

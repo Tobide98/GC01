@@ -24,6 +24,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 2001
     rewardName: Metal Slime
+    icon: {fileID: 999803867, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 100
     rarity: 0
@@ -35,6 +36,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 2003
     rewardName: Bunny Slime
+    icon: {fileID: 506915458, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 70
     rarity: 1
@@ -46,6 +48,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 2004
     rewardName: Cat Slime
+    icon: {fileID: 267502135, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 70
     rarity: 1
@@ -57,6 +60,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 2002
     rewardName: Viking Slime
+    icon: {fileID: 2049646447, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 50
     rarity: 2
@@ -68,6 +72,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 2005
     rewardName: Cat Slime King
+    icon: {fileID: 2004959908, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 5
     rarity: 3

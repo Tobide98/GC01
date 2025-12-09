@@ -8,8 +8,8 @@ public class DragRotateObject : MonoBehaviour
     private bool invertY = true;
 
     [Header("Idle Reset")]
-    public float idleResetTime = 2f;      // seconds of idleness
-    public float resetSpeed = 4f;         // smoothing speed for reset
+    public float idleResetTime = 2f;
+    public float resetSpeed = 4f;
 
     private float idleTimer = 0f;
     private bool isResetting = false;
@@ -17,22 +17,11 @@ public class DragRotateObject : MonoBehaviour
     private bool dragging = false;
     private Vector3 lastMousePos;
 
-    // Mesh center (world space)
-    private Vector3 center;
-
-    // Store initial transform values
     private Quaternion initialRotation;
-    private Vector3 initialPosition;
 
     void Start()
     {
-        // Get mesh center
-        MeshRenderer mr = GetComponentInChildren<MeshRenderer>();
-        center = (mr != null) ? mr.bounds.center : transform.position;
-
-        // Store starting values
-        initialRotation = this.transform.localRotation;
-        initialPosition = this.transform.localPosition;
+        initialRotation = transform.localRotation;
     }
 
     void Update()
@@ -49,10 +38,6 @@ public class DragRotateObject : MonoBehaviour
             isResetting = false;
             idleTimer = 0f;
             lastMousePos = Input.mousePosition;
-
-            MeshRenderer mr = GetComponentInChildren<MeshRenderer>();
-            if (mr != null)
-                center = mr.bounds.center;
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -60,16 +45,14 @@ public class DragRotateObject : MonoBehaviour
 
         if (dragging)
         {
-            idleTimer = 0f; // reset idle timer
+            idleTimer = 0f;
 
             Vector3 delta = Input.mousePosition - lastMousePos;
 
             float rotX = delta.y * rotationSpeed * (invertY ? -1 : 1);
             float rotY = -delta.x * rotationSpeed * (invertX ? -1 : 1);
 
-            // Rotate around center
-            transform.RotateAround(center, transform.right, rotX);
-            transform.RotateAround(center, Vector3.up, rotY);
+            transform.localRotation *= Quaternion.Euler(rotX, rotY, 0f);
 
             lastMousePos = Input.mousePosition;
         }
@@ -86,23 +69,13 @@ public class DragRotateObject : MonoBehaviour
 
         if (isResetting)
         {
-            // Smooth rotation reset
-            transform.rotation = Quaternion.Lerp(
-                transform.rotation,
+            transform.localRotation = Quaternion.Lerp(
+                transform.localRotation,
                 initialRotation,
                 Time.deltaTime * resetSpeed
             );
 
-            // Smooth position reset
-            transform.localPosition = Vector3.Lerp(
-                transform.localPosition,
-                initialPosition,
-                Time.deltaTime * resetSpeed
-            );
-
-            // Stop when close enough
-            if (Quaternion.Angle(transform.rotation, initialRotation) < 0.5f &&
-                (transform.localPosition - initialPosition).sqrMagnitude < 0.0005f)
+            if (Quaternion.Angle(transform.localRotation, initialRotation) < 0.5f)
             {
                 isResetting = false;
                 idleTimer = 0f;

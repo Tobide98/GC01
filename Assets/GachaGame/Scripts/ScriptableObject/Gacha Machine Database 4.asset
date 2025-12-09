@@ -24,6 +24,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4001
     rewardName: Herring
+    icon: {fileID: -75612399, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 150
     rarity: 0
@@ -35,6 +36,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4002
     rewardName: Gecko
+    icon: {fileID: -608345984, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 100
     rarity: 1
@@ -46,6 +48,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4003
     rewardName: Muskrat
+    icon: {fileID: 1443486506, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 100
     rarity: 1
@@ -57,6 +60,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4004
     rewardName: Snake
+    icon: {fileID: 21300004, guid: a5fd1d31c7504cd4083d950f36ed7511, type: 3}
     baseQuantity: 1
     weight: 50
     rarity: 2
@@ -68,6 +72,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4005
     rewardName: Monkey
+    icon: {fileID: 1398412196, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 50
     rarity: 2
@@ -79,6 +84,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4006
     rewardName: Pudu
+    icon: {fileID: -1173243969, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 50
     rarity: 2
@@ -90,6 +96,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4007
     rewardName: Sparrow
+    icon: {fileID: 320100615, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 10
     rarity: 3
@@ -101,6 +108,7 @@ MonoBehaviour:
       type: 3}
     rewardItemId: 4008
     rewardName: Squid
+    icon: {fileID: -889065264, guid: 546a7861846a14c4d99a00e2bc5a1419, type: 3}
     baseQuantity: 1
     weight: 10
     rarity: 3
