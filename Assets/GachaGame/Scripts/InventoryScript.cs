@@ -28,6 +28,9 @@ public class InventoryScript : MonoBehaviour
     [Header("Preview Handler")]
     public InventoryModelPreview previewHandler;
 
+    [Header("Misc")]
+    [SerializeField] private GameObject emptyInfo;
+
     private enum FilterCategory
     {
         All = 0,
@@ -126,6 +129,8 @@ public class InventoryScript : MonoBehaviour
 
     public void Refresh()
     {
+        emptyInfo.SetActive(false);
+
         if (gridParent == null || itemUIPrefab == null)
         {
             Debug.LogWarning("InventoryScript missing gridParent or itemUIPrefab reference.");
@@ -134,7 +139,11 @@ public class InventoryScript : MonoBehaviour
 
         ClearGrid();
 
-        if (playerData == null || playerData.inventory == null) return;
+        if (playerData == null || playerData.inventory == null || playerData.inventory.Count <= 0)
+        {
+            emptyInfo.SetActive(true);
+            return;
+        }
 
         // 1) Filter
         IEnumerable<PlayerData.InventoryEntry> query = playerData.inventory;

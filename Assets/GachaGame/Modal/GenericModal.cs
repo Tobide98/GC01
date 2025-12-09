@@ -1,5 +1,6 @@
 ﻿namespace Gravitons.UI.Modal
 {
+    using DG.Tweening;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
@@ -12,6 +13,8 @@
         [SerializeField] protected TextMeshProUGUI m_Body;
         [Tooltip("Buttons in the modal")]
         [SerializeField] protected Button[] m_Buttons;
+        [SerializeField] CanvasGroup canvasGroup;
+        Tween showTween;
 
         /// <summary>
         /// Deactivate buttons in awake
@@ -26,6 +29,7 @@
 
         public override void Show(ModalContentBase modalContent, ModalButton[] modalButton)
         {
+            PlayAnimation();
             GenericModalContent content = (GenericModalContent) modalContent;
             m_Title.text = content.Title;
             m_Body.text = content.Body;
@@ -55,6 +59,20 @@
                     m_Buttons[index].onClick.RemoveAllListeners();
                 });
             }
+        }
+
+        void PlayAnimation()
+        {
+            showTween?.Kill();
+
+            var seq = DOTween.Sequence();
+
+            if (canvasGroup != null)
+                seq.Join(canvasGroup.DOFade(1f, 0.2f).From(0));
+
+            seq.Join(this.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).From(0.5f));
+
+            showTween = seq;
         }
     }
 }
